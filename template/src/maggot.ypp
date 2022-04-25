@@ -1,0 +1,36 @@
+%{
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <string>
+using namespace std;
+extern int yylex(void);
+
+extern int yyparse();
+int yyerror(const char *s);
+
+%}
+
+%token NUMBER
+
+
+%%
+
+
+lines
+	: exp {printf("test\n");}
+	;
+exp 
+	: NUMBER
+	;
+
+
+%%
+
+
+int yyerror(const char *s)
+{
+	fprintf(stderr, "[!] : %s\n",s);
+	return 0;
+}
+
