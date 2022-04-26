@@ -3,6 +3,8 @@
 #include <string.h>
 #include <iostream>
 #include <string>
+#include "main.h"
+
 using namespace std;
 extern int yylex(void);
 
@@ -30,7 +32,7 @@ exp
 
 int yyerror(const char *s)
 {
-	fprintf(stderr, "[!] : %s\n",s);
+	error("%s", s);
 	return 0;
 }
 
