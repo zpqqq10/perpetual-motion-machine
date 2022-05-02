@@ -3,7 +3,8 @@
 #include <string.h>
 #include <iostream>
 #include <string>
-#include "main.h"
+#include "../include/main.h"
+#include "../include/utils.h"
 
 using namespace std;
 extern int yylex(void);
@@ -17,7 +18,7 @@ int yyerror(const char *s);
 {
 	Block* block;
 
-	int dataType;
+	int valueType;
 	int intval;
 	Decl* decl;
 	DeclList* declList;
@@ -48,10 +49,8 @@ int yyerror(const char *s);
 /* %type <block> global main_block function
 %type <decl> global_item protoType variable_decl array_decl parameter
 %type <declList> decl_list parameters parameter_decl
-%type <dataType> type
 %type <intval> size
 %type <intval> logic_op relation_op
-%type <expr> id left_id value func_call expr_return
 %type <expr> expression relation_expr logic_term logic_expr arith_expr term factor
 %type <exprList> variables parameterExprs
 %type <stmt> stmt assignment loop condition for_loop while_loop else_block
@@ -59,7 +58,8 @@ int yyerror(const char *s);
 %type <funcbody> function_body
 %type <funcImpl> function_impl
 %type <funcList> function_list */
-
+%type <valueType> type_specifier
+%type <expr> call factor
 %start program
 
 
@@ -97,11 +97,11 @@ var: IDENTIFIER {;}
    /* int a = 2; */
    ;
 
-type_specifier: INT {;}
-			  | FLOAT {;}
-			  | STRING {;}
-			  | BOOL {;}
-			  | VOID {;}
+type_specifier: INT {$$ = VALUEINT;}
+			  | FLOAT {$$ = VALUEFLOAT;}
+			  | STRING {$$ = VALUESTRING;}
+			  | BOOL {$$ = VALUEBOOL;}
+			  | VOID {$$ = VALUEVOID;}
 			  ;
 
 /******** global prototype list ********/
@@ -218,16 +218,17 @@ term: term MUL factor {;}
 	;
 
 factor: LEFTP expression RIGHTP {;}
-	  | IDENTIFIER {;}
-	  | IDENTIFIER LEFTSB expression RIGHTSB {;}
+	  | IDENTIFIER {$$ = new Identifier(*$1);}
+	  | IDENTIFIER LEFTSB expression RIGHTSB {$$ = new ArrEExpr($1, $3);}
 	  | call {;}
-	  | INTEGER_VALUE {;}
-	  | FLOAT_VALUE {;}
-	  | TRUE {;}
-	  | FALSE {;}
+	  | INTEGER_VALUE {$$ = new Integer(atoi($1));}
+	  | FLOAT_VALUE {$$ = new Float(atof($1));}
+	  | TRUE {$$ = new Float(atof(true));}
+	  | FALSE {$$ = new Float(atof(false));}
+	  /* | STRING_VALUE {;} */
 	  ;
 
-call: IDENTIFIER LEFTP args RIGHTP {;}
+call: IDENTIFIER LEFTP args RIGHTP {$$ = new Call($1,$3);}
 	;
 
 args: arg_list {;}
