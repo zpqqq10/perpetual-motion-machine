@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "y.tab.h"
 // REAL    [-+]?(([0-9]*\.[0-9]+)|([0-9]+\.)|([0-9]+[eE][-+]?[0-9]+))
+// real: 12.02e-2, +12.2, -1e+2
 %}
 %option noyywrap
 WHITESPACE  [ \t]+
@@ -14,7 +15,9 @@ OCT     {Sign}?(0)([0-7]*)
 HEX     {Sign}?(0[xX])([0-9a-fA-F]+)
 REAL    {Sign}?(((({Digits}?\.{Digits})|({Digits}\.))([eE]{Sign}{Digits})?)|({Digits}[eE]{Sign}{Digits}))
 STRING  \"({Schar}+)?\"
-
+LINECOMMENT     "//"[^\r\n]*
+BLOCKCOMMENT    "/*""/"*([^*/]|[^*]"/"|"*"[^/])*"*"*"*/"
+COMMENTS        ({LINECOMMENT})|({BLOCKCOMMENT})
 %%
 {WHITESPACE} {}
 \[ {return LEFTSB;}
@@ -32,15 +35,15 @@ STRING  \"({Schar}+)?\"
 \- {return SUB;}
 \* {return MUL;}
 \/ {return DIV;}
-\^ {return POW;}
 > {return GT;}
 \< {return LT;}
 == {return EQ;}
-\<> {cout<<"<>"<<endl;return NEQ;}
-\<= {return ELT;}
->= {return EGT;}
+!= {cout<<"!="<<endl;return NEQ;}
+\<= {return LE;}
+>= {return GE;}
 \| {return OR;}
-&& {return AND;}
+& {return AND;}
+\^ {return XOR;}
 
 float {return FLOAT;}
 int {return INT;}
@@ -71,6 +74,8 @@ true {return TRUE;}
 {REAL} {return FLOAT_VALUE;}
 
 {STRING} {return STRING_VALUE;}
+
+{COMMENTS} {return COMMENT;}
  // [0-9]* {return NUMBER;}
  // \n {return 0;};
 %%

@@ -13,19 +13,230 @@ int yyerror(const char *s);
 
 %}
 
-%token NUMBER
+%union
+{
+	Block* block;
+
+	int dataType;
+	int intval;
+	Decl* decl;
+	DeclList* declList;
+	Stmt* stmt;
+	StmtList* stmtList;
+	Expr* expr;
+	ExprList* exprList;
+
+	FuncBody* funcbody;
+	FuncImpl* funcImpl;
+	FuncList* funcList;
+	char Char;
+	char Op;
+	char* valueStr;
+    string* Str;
+}
+
+%token COLON SEMICOLON COMMA LEFTP RIGHTP LEFTB RIGHTB LEFTSB RIGHTSB
+%token MAIN RETURN FOR IN TO WHILE IF ELSE BREAK
+%token <Str> IDENTIFIER STRING_VALUE
+%token <valueStr> INT FLOAT BOOL VOID STRING
+%token <valueStr> INTEGER_VALUE FLOAT_VALUE FALSE TRUE
+
+%token ASSIGN GT LT EQ NEQ GE LE AND OR XOR
+%left <Op> ADD SUB
+%left <Op> MUL DIV
+
+/* %type <block> global main_block function
+%type <decl> global_item protoType variable_decl array_decl parameter
+%type <declList> decl_list parameters parameter_decl
+%type <dataType> type
+%type <intval> size
+%type <intval> logic_op relation_op
+%type <expr> id left_id value func_call expr_return
+%type <expr> expression relation_expr logic_term logic_expr arith_expr term factor
+%type <exprList> variables parameterExprs
+%type <stmt> stmt assignment loop condition for_loop while_loop else_block
+%type <stmtList> stmt_list
+%type <funcbody> function_body
+%type <funcImpl> function_impl
+%type <funcList> function_list */
+
+%start program
 
 
 %%
 
+/* global variables list + main function + function list */
+program: gdecl_list main_func funcs {;}
+	   ;
 
-lines
-	: exp {printf("test\n");}
-	;
-exp 
-	: NUMBER
+/******** global declaration list ********/
+gdecl_list: gdecl_list gdecl SEMICOLON {;}
+		  | {;}
+		  ;
+
+/* declare some global variables or function prototypes (before main function) */
+gdecl: var_decl {;}
+	 | prototype {;}
+	 ;
+
+/* variable declaration */
+var_decl: type_specifier vars {;}
+		;
+
+vars: vars COMMA var {; }
+	| var {;}
 	;
 
+var: IDENTIFIER {;}
+   /* int a; */
+   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {;}
+   /* int a[2]; */
+   | IDENTIFIER LEFTSB RIGHTSB {;}
+   /* int a[]; */
+   | IDENTIFIER ASSIGN INTEGER_VALUE {;}
+   /* int a = 2; */
+   ;
+
+type_specifier: INT {;}
+			  | FLOAT {;}
+			  | STRING {;}
+			  | BOOL {;}
+			  | VOID {;}
+			  ;
+
+/******** global prototype list ********/
+/* int foo(int x, int y) */
+prototype: type_specifier IDENTIFIER LEFTP paras RIGHTP {;}
+		 | type_specifier IDENTIFIER LEFTP RIGHTP {;}
+		 ;
+
+/* int x, int y */
+paras: paras COMMA para {;}
+	 | para {;}
+	 ;
+
+para: type_specifier IDENTIFIER {;}
+	| type_specifier IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {;}
+	| type_specifier IDENTIFIER LEFTSB RIGHTSB {;}
+	;
+
+/******** main function implementation ********/
+/* int main(){} */
+main_func: INT MAIN LEFTP RIGHTP compound_stmt {;}
+		 | VOID MAIN LEFTP RIGHTP compound_stmt {;}
+		 ;
+
+/******** function implementation ********/
+funcs: funcs func {;}
+	 | {;}
+	 ;
+
+func: prototype compound_stmt {;}
+	;
+
+/* all the local variables should be declared at first */
+/* and then the statements */
+/* begin with { and end with } */
+compound_stmt: LEFTB localvars stmt_list RIGHTB {;}
+		;
+
+localvars: localvars var_decl SEMICOLON {;}
+		 | {;}
+		 ;
+
+stmt_list: stmt_list stmt {;}
+		 | {;}
+		 ;
+
+/******** statements ********/
+stmt: expression_stmt {;}
+	| compound_stmt {;}
+	| selection_stmt {;}
+	| loop_stmt {;}
+	| return_stmt {;}
+	;
+
+expression_stmt: expression SEMICOLON {;}
+			   | SEMICOLON {;}
+			   ;
+
+selection_stmt: IF LEFTP expression RIGHTP compound_stmt {;}
+			  | IF LEFTP expression RIGHTP compound_stmt ELSE compound_stmt {;}
+			  ;
+
+loop_stmt: for_loop {;}
+		 | while_loop {;}
+		 ;
+
+return_stmt: RETURN SEMICOLON {;}
+		   | RETURN expression SEMICOLON {;}
+		   ;
+
+for_loop: FOR LEFTP expression SEMICOLON expression SEMICOLON expression RIGHTP compound_stmt {;}
+		| FOR LEFTP var_decl SEMICOLON expression SEMICOLON expression RIGHTP compound_stmt {;}
+		; 
+
+while_loop: WHILE LEFTP expression RIGHTP compound_stmt {;}
+		  ;
+		  
+expression: IDENTIFIER ASSIGN expression {;}
+		  /* a = 2 */
+		  | IDENTIFIER LEFTSB expression RIGHTSB ASSIGN expression {;}
+		  /* a[1] = 2 */
+		  | simpleexpr {;}
+		  | {;}
+		  ;
+
+simpleexpr: addition {;}
+		  | addition relationop addition {;}
+		  | logic {;}
+		  ;
+
+relationop: LT {;}
+		  | GT {;}
+		  | EQ {;}
+		  | NEQ {;}
+		  | LE {;}
+		  | GE {;}
+		  ;
+
+/* ? may be error here */
+logic: logic OR factor {;}
+	 | logic AND factor {;}
+	 | logic XOR factor {;}
+	 | factor {;}
+	 ;
+
+addition: addition ADD term {;}
+		| addition SUB term {;}
+		| term {;}
+		;
+
+term: term MUL factor {;}
+	| term DIV factor {;}
+	| factor {;}
+	;
+
+factor: LEFTP expression RIGHTP {;}
+	  | IDENTIFIER {;}
+	  | IDENTIFIER LEFTSB expression RIGHTSB {;}
+	  | call {;}
+	  | INTEGER_VALUE {;}
+	  | FLOAT_VALUE {;}
+	  | TRUE {;}
+	  | FALSE {;}
+	  ;
+
+call: IDENTIFIER LEFTP args RIGHTP {;}
+	;
+
+args: arg_list {;}
+	| {;}
+	;
+
+arg_list: arg_list COMMA expression {;}
+		| expression {;}
+		;
 
 %%
 
