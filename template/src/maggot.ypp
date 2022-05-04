@@ -1,12 +1,10 @@
 %{
-#include <stdio.h>
-#include <string.h>
 #include <iostream>
 #include <string>
 #include "../include/main.h"
 #include "../include/utils.h"
-
 using namespace std;
+
 extern int yylex(void);
 
 extern int yyparse();
@@ -16,10 +14,10 @@ int yyerror(const char *s);
 
 %union
 {
-	Block* block;
+	/* Block* block; */
 
 	int valueType;
-	int intval;
+	/* int intval;
 	Decl* decl;
 	DeclList* declList;
 	Stmt* stmt;
@@ -30,7 +28,7 @@ int yyerror(const char *s);
 	FuncBody* funcbody;
 	FuncImpl* funcImpl;
 	FuncList* funcList;
-	char Char;
+	char Char; */
 	char Op;
 	char* valueStr;
     string* Str;
@@ -38,7 +36,7 @@ int yyerror(const char *s);
 
 %token COLON SEMICOLON COMMA LEFTP RIGHTP LEFTB RIGHTB LEFTSB RIGHTSB
 %token MAIN RETURN FOR IN TO WHILE IF ELSE BREAK
-%token <Str> IDENTIFIER STRING_VALUE
+%token <Str> IDENTIFIER STRING_VALUE COMMENT
 %token <valueStr> INT FLOAT BOOL VOID STRING
 %token <valueStr> INTEGER_VALUE FLOAT_VALUE FALSE TRUE
 
@@ -46,7 +44,7 @@ int yyerror(const char *s);
 %left <Op> ADD SUB
 %left <Op> MUL DIV
 
-/* %type <block> global main_block function
+/* %type <block> global function
 %type <decl> global_item protoType variable_decl array_decl parameter
 %type <declList> decl_list parameters parameter_decl
 %type <intval> size
@@ -59,14 +57,14 @@ int yyerror(const char *s);
 %type <funcImpl> function_impl
 %type <funcList> function_list */
 %type <valueType> type_specifier
-%type <expr> call factor
+/* %type <expr> call factor */
 %start program
 
 
 %%
 
-/* global variables list + main function + function list */
-program: gdecl_list main_func funcs {;}
+/* global variables list + function list */
+program: gdecl_list funcs {;}
 	   ;
 
 /******** global declaration list ********/
@@ -119,12 +117,6 @@ para: type_specifier IDENTIFIER {;}
 	| type_specifier IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {;}
 	| type_specifier IDENTIFIER LEFTSB RIGHTSB {;}
 	;
-
-/******** main function implementation ********/
-/* int main(){} */
-main_func: INT MAIN LEFTP RIGHTP compound_stmt {;}
-		 | VOID MAIN LEFTP RIGHTP compound_stmt {;}
-		 ;
 
 /******** function implementation ********/
 funcs: funcs func {;}
@@ -218,17 +210,17 @@ term: term MUL factor {;}
 	;
 
 factor: LEFTP expression RIGHTP {;}
-	  | IDENTIFIER {$$ = new Identifier(*$1);}
-	  | IDENTIFIER LEFTSB expression RIGHTSB {$$ = new ArrEExpr($1, $3);}
+	  | IDENTIFIER {;}
+	  | IDENTIFIER LEFTSB expression RIGHTSB {;}
 	  | call {;}
-	  | INTEGER_VALUE {$$ = new Integer(atoi($1));}
-	  | FLOAT_VALUE {$$ = new Float(atof($1));}
-	  | TRUE {$$ = new Float(atof(true));}
-	  | FALSE {$$ = new Float(atof(false));}
+	  | INTEGER_VALUE {;}
+	  | FLOAT_VALUE {;}
+	  | TRUE {;}
+	  | FALSE {;}
 	  /* | STRING_VALUE {;} */
 	  ;
 
-call: IDENTIFIER LEFTP args RIGHTP {$$ = new Call($1,$3);}
+call: IDENTIFIER LEFTP args RIGHTP {;}
 	;
 
 args: arg_list {;}

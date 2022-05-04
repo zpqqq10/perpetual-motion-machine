@@ -1,6 +1,7 @@
 %{
-#include <stdio.h>
+#include <iostream>
 #include "y.tab.h"
+using namespace std;
 // REAL    [-+]?(([0-9]*\.[0-9]+)|([0-9]+\.)|([0-9]+[eE][-+]?[0-9]+))
 // real: 12.02e-2, +12.2, -1e+2
 %}
@@ -24,8 +25,8 @@ COMMENTS        ({LINECOMMENT})|({BLOCKCOMMENT})
 ] {return RIGHTSB;}
 \( {return LEFTP;}
 \) {return RIGHTP;}
-\{ {return LEFTCB;}
-\} {return RIGHTCB;}
+\{ {return LEFTB;}
+\} {return RIGHTB;}
 , {return COMMA;}
 ; {return SEMICOLON;}
 : {return COLON;}
@@ -76,6 +77,5 @@ true {return TRUE;}
 {STRING} {return STRING_VALUE;}
 
 {COMMENTS} {return COMMENT;}
- // [0-9]* {return NUMBER;}
- // \n {return 0;};
+
 %%
