@@ -31,7 +31,7 @@ int yyerror(const char *s);
 %left <Op> GT LT EQ NEQ GE LE
 %left <Op> ADD SUB
 %left <Op> MUL DIV
-%nonassoc  <Op> UMINUS
+%right  <Op> UMINUS
 
 %start program
 
@@ -162,7 +162,7 @@ term: term MUL factor {;}
 	;
 
 factor: LEFTP expression RIGHTP {;}
-	//   | SUB expression %prec UMINUS {cout << "---" << endl;}
+	  | SUB factor %prec UMINUS {cout << "---" << endl;}
 	  | variable {;}
 	  | call {;}
 	  | value {;}
