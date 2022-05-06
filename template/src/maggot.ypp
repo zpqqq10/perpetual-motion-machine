@@ -27,9 +27,11 @@ int yyerror(const char *s);
 %token <valueStr> INTEGER_VALUE FLOAT_VALUE FALSE TRUE
 
 %token ASSIGN GT LT EQ NEQ GE LE AND OR XOR
+
+%left <Op> GT LT EQ NEQ GE LE
 %left <Op> ADD SUB
 %left <Op> MUL DIV
-%right <Op> UMINUS
+%nonassoc  <Op> UMINUS
 
 %start program
 
@@ -131,24 +133,22 @@ return_stmt: RETURN SEMICOLON {;}
 		   ;
 
 expression: variable ASSIGN expression {;}
-		  | simple_expr {;}
+		  | relation_expr {;}
 		  ;
 
 variable: IDENTIFIER {;}
 		| IDENTIFIER LEFTSB expression RIGHTSB {;}
 		;
 
-simple_expr: addition relationop addition {;}
-		   | addition {;}
-		   ;
+relation_expr: relation_expr LE addition {;}
+			 | relation_expr LT addition {;}
+			 | relation_expr GT addition {;}
+			 | relation_expr GE addition {;}
+			 | relation_expr EQ addition {;}
+			 | relation_expr NEQ addition {;}
+		     | addition {;}
+		     ;
 
-relationop: LE {;}
-		  | LT {;}
-		  | GT {;}
-		  | GE {;}
-		  | EQ {;}
-		  | NEQ {;}
-		  ;
 
 // + or -
 addition: addition ADD term {;}
@@ -162,7 +162,7 @@ term: term MUL factor {;}
 	;
 
 factor: LEFTP expression RIGHTP {;}
-	  | SUB expression %prec UMINUS {cout << "---" << endl;}
+	//   | SUB expression %prec UMINUS {cout << "---" << endl;}
 	  | variable {;}
 	  | call {;}
 	  | value {;}

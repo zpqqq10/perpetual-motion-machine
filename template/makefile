@@ -22,9 +22,9 @@ src/y.tab.o: src/y.tab.c
 src/lex.yy.c: src/maggot.l
 	$(LEX) --outfile=$@ $^ 
 src/y.tab.c src/y.tab.h: src/maggot.ypp
-	$(YACC) $^ -o src/y.tab.c
+	$(YACC) $^ -v -o src/y.tab.c
 
 
 
 clean:
-	rm -rf $(OBJS) src/y.tab.c src/y.tab.h src/lex.yy.c maggot
+	rm -rf $(OBJS) src/y.tab.c src/y.tab.h src/lex.yy.c maggot src/y.output
