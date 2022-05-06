@@ -46,12 +46,14 @@ decl_list: decl_list decl {;}
 // one declaration of a variable or a function
 decl: var_decl {;}
 	| func_decl {;}
-	// | COMMENT {;}
+	| COMMENT {;}
 	;
 
 // variable declaration
+// var_decl: type_specifier IDENTIFIER SEMICOLON {;}
+// 		| type_specifier IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB SEMICOLON {;}
+// 		; 
 var_decl: type_specifier vars SEMICOLON {;}
-		| COMMENT {;} // *this COMMENT raises a s/r conflict 
 		; 
 
 vars: vars COMMA var {;}
@@ -60,7 +62,6 @@ vars: vars COMMA var {;}
 
 var: IDENTIFIER {;}
    | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {;}
-   | IDENTIFIER ASSIGN expression {;}
    ;
 
 type_specifier: INT {;}
@@ -77,7 +78,6 @@ func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {;}
 
 // parameters of a function declaration or a function definition
 params: param_list {;}
-	  | VOID {;}
 	  | {;}
 	  ;
 
@@ -118,8 +118,22 @@ expression_stmt: expression SEMICOLON {;}
 
 // if else
 selection_stmt: IF LEFTP expression RIGHTP stmt {;}
-			  | IF LEFTP expression RIGHTP stmt ELSE stmt {;} // *this dangling ELSE raises a s/r conflict 
+			  | IF LEFTP expression RIGHTP stmt ELSE stmt {;}
 			  ;
+// stmt: matched_stmt {;}
+// 	| unmatched_stmt {;}
+// 	;
+
+// matched_stmt: IF LEFTP expression RIGHTP matched_stmt ELSE matched_stmt {;}
+// 			| expression_stmt {;}
+// 			| compound_stmt {;}
+// 			| iteration_stmt {;}
+// 			| return_stmt {;}
+// 			;
+
+// unmatched_stmt: IF LEFTP expression RIGHTP stmt {;}
+// 			  | IF LEFTP expression RIGHTP matched_stmt ELSE unmatched_stmt {;}
+// 			  ;
 
 // while
 iteration_stmt: WHILE LEFTP expression RIGHTP stmt {;}
@@ -162,7 +176,7 @@ term: term MUL factor {;}
 	;
 
 factor: LEFTP expression RIGHTP {;}
-	  | SUB expression %prec UMINUS {cout << "---" << endl;}
+	//   | '-' expression %prec UMINUS {cout << "---" << endl;}
 	  | variable {;}
 	  | call {;}
 	  | value {;}

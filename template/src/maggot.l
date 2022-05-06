@@ -6,15 +6,16 @@ using namespace std;
 // real: 12.02e-2, +12.2, -1e+2
 %}
 %option noyywrap
-WHITESPACE  [ \t]+
-IDENTIFIER  [_a-zA-z][_a-zA-Z0-9]*
+WHITESPACE  [ \t\n]+
+IDENTIFIER  [_a-zA-Z][_a-zA-Z0-9]*
 Digits  ([0-9]+)
 Sign    ([-+]?)
 Schar   (([^"\\\r\n])|(\\['"?abfnrtv\\])|(\\n)|(\\\r\n))
-DEC     {Sign}([1-9][0-9]*)
-OCT     {Sign}?(0)([0-7]*)
-HEX     {Sign}?(0[xX])([0-9a-fA-F]+)
-REAL    {Sign}?(((({Digits}?\.{Digits})|({Digits}\.))([eE]{Sign}{Digits})?)|({Digits}[eE]{Sign}{Digits}))
+DEC     ([1-9][0-9]*)
+OCT     (0)([0-7]*)
+HEX     (0[xX])([0-9a-fA-F]+)
+INT     ({OCT}|{HEX}|{DEC})
+REAL    (((({Digits}?\.{Digits})|({Digits}\.))([eE]{Sign}{Digits})?)|({Digits}[eE]{Sign}{Digits}))
 STRING  \"({Schar}+)?\"
 LINECOMMENT     "//"[^\r\n]*
 BLOCKCOMMENT    "/*""/"*([^*/]|[^*]"/"|"*"[^/])*"*"*"*/"
@@ -22,13 +23,13 @@ COMMENTS        ({LINECOMMENT})|({BLOCKCOMMENT})
 %%
 {WHITESPACE} {}
 \[ {return LEFTSB;}
-] {return RIGHTSB;}
+\] {return RIGHTSB;}
 \( {return LEFTP;}
 \) {return RIGHTP;}
 \{ {return LEFTB;}
 \} {return RIGHTB;}
-, {return COMMA;}
-; {return SEMICOLON;}
+, { return COMMA; }
+; { return SEMICOLON;}
 : {return COLON;}
 
 = {return ASSIGN;}
@@ -39,12 +40,14 @@ COMMENTS        ({LINECOMMENT})|({BLOCKCOMMENT})
 > {return GT;}
 \< {return LT;}
 == {return EQ;}
-!= {cout<<"!="<<endl;return NEQ;}
+!= {return NEQ;}
 \<= {return LE;}
 >= {return GE;}
 \| {return OR;}
 & {return AND;}
 \^ {return XOR;}
+\" {return DQUOTE;}
+\' {return SQUOTE;}
 
 float {return FLOAT;}
 int {return INT;}
@@ -53,7 +56,6 @@ void {return VOID;}
 string {return STRING;}
 
 break {return BREAK;}
-main { return MAIN;}
 return {return RETURN;}
 while {return WHILE;}
 for {return FOR;}
@@ -64,18 +66,21 @@ else {return ELSE;}
 false {return FALSE;}
 true {return TRUE;}
 
-{IDENTIFIER} {return IDENTIFIER;}
+{STRING} {cout << "str " << yytext << endl;return STRING_VALUE;}
 
-{DEC} {return INTEGER_VALUE;}
+{IDENTIFIER} {cout << "id " << yytext << endl; return IDENTIFIER;}
 
-{OCT} {return INTEGER_VALUE;}
+{INT} {cout << "int " << yytext << endl; return INTEGER_VALUE;}
 
-{HEX} {return INTEGER_VALUE;}
+{REAL} {cout << "real " << yytext << endl;return FLOAT_VALUE;}
 
-{REAL} {return FLOAT_VALUE;}
-
-{STRING} {return STRING_VALUE;}
-
-{COMMENTS} {return COMMENT;}
+{COMMENTS} {cout << "comment " << yytext << endl;return COMMENT;}
 
 %%
+
+// int main(){
+//     while(1){
+//         yylex(); 
+//     }
+//     return 0;
+// }
