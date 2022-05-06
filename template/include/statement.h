@@ -9,68 +9,150 @@
 using namespace std;
 
 // parent object
-class Stmt: {
+class StmtAST : public BaseAST
+{
     int stmtType;
+
 public:
-    Stmt() {
+    StmtAST()
+    {
         this->stmtType = STMTDEFAULT;
     }
 
-    ~Stmt() {}
+    ~StmtAST() {}
 
-    void setStmtType(int type) {
+    void setStmtType(int type)
+    {
         this->stmtType = type;
     }
 
-    int getStmtType() {
+    int getStmtType()
+    {
         return this->stmtType;
     }
 
-    virtual void Print() {
+    virtual void Print()
+    {
         cout << "STMT" << endl;
     }
 
     virtual llvm::Value *CodeGen();
 };
-typedef unique_ptr<Stmt> stmtPtr;
 
 // expression
-class Expr : public Stmt {
+class ExprAST : public StmtAST
+{
     int exprType;
+
 public:
     int valueType;
     // ? a member for return value
 
-    Expr() {
+    ExprAST()
+    {
         this->valueType = VALUEDEFAULT;
-        this->exprType = EXPRDEFAULT; 
+        this->exprType = EXPRDEFAULT;
         this->setStmtType(STMTEXPRESSION);
     }
 
-    ~Expr() {}
+    ~ExprAST() {}
 
-    void setExprType(int type) {
+    void setExprType(int type)
+    {
         this->exprType = type;
     }
 
-    int getExprType() {
+    int getExprType()
+    {
         return this->exprType;
     }
 
-    void setValueType(int type) {
+    void setValueType(int type)
+    {
         this->valueType = type;
     }
 
-    virtual int getValueType() {
+    virtual int getValueType()
+    {
         return this->valueType;
     }
 
-    virtual void Print() {
+    virtual void Print()
+    {
         cout << "EXPR" << endl;
     }
 
-    llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
-typedef unique_ptr<Expr> exprPtr;
+
+// compound statement
+class CompoundAST : public StmtAST
+{
+
+public:
+
+    CompoundAST()
+    {
+    }
+
+    ~CompoundAST() {}
+    virtual llvm::Value *CodeGen();
+};
+
+// selection statement
+class SelectionAST : public StmtAST
+{
+
+public:
+
+    SelectionAST()
+    {
+    }
+
+    ~SelectionAST() {}
+    virtual llvm::Value *CodeGen();
+};
+
+// iteration statement of while
+class WhileAST : public StmtAST
+{
+
+public:
+
+    WhileAST()
+    {
+    }
+
+    ~WhileAST() {}
+    virtual llvm::Value *CodeGen();
+};
+
+// return statement
+class ReturnAST : public StmtAST
+{
+
+public:
+
+    ReturnAST()
+    {
+    }
+
+    ~ReturnAST() {}
+    virtual llvm::Value *CodeGen();
+};
+
+// comment
+class CommentAST : public StmtAST
+{
+
+public:
+
+    CommentAST()
+    {
+    }
+
+    ~CommentAST() {}
+    virtual llvm::Value *CodeGen();
+};
 
 #endif

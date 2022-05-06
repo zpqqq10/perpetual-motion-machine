@@ -97,7 +97,6 @@ compound_stmt: LEFTB local_decls stmt_list RIGHTB {;}
 
 local_decls: local_decls var_decl {;}
 		   | {;}
-		   
 		   ;
 
 // statements
