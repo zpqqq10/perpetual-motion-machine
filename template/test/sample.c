@@ -1,5 +1,6 @@
 int x[10], test = 0x22, f = 0.25, num = 222 - -233;
 
+void sort(int a[], int low, int high);
 int minloc (int a[], int low, int high)
 {
     int i; 

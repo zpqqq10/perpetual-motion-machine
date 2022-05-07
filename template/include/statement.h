@@ -36,7 +36,7 @@ public:
         cout << "STMT" << endl;
     }
 
-    virtual llvm::Value *CodeGen();
+    // virtual llvm::Value *CodeGen();
 };
 
 // expression
@@ -50,7 +50,7 @@ public:
 
     ExprAST()
     {
-        this->valueType = VALUEDEFAULT;
+        this->valueType = TYPEDEFAULT;
         this->exprType = EXPRDEFAULT;
         this->setStmtType(STMTEXPRESSION);
     }

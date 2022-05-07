@@ -3,7 +3,10 @@
 #include <string>
 #include "../include/main.h"
 #include "../include/utils.h"
+#include "../include/declaration.h"
 using namespace std;
+
+extern Program* prog;
 
 extern int yylex(void);
 
@@ -14,27 +17,27 @@ int yyerror(const char *s);
 
 %union
 {
+	// BaseAST* base;
 	int valueType;
-
+	std::string* str;
 	char Op;
-	char* valueStr;
+	char* valuetext;
 }
 
 %token COLON SEMICOLON COMMA LEFTP RIGHTP LEFTB RIGHTB LEFTSB RIGHTSB DQUOTE SQUOTE
 %token RETURN FOR IN TO WHILE IF ELSE BREAK
-%token IDENTIFIER STRING_VALUE COMMENT
-%token <valueStr> INT FLOAT BOOL VOID STRING
-%token <valueStr> INTEGER_VALUE FLOAT_VALUE FALSE TRUE
-
+%token <str> IDENTIFIER STRING_VALUE COMMENT
+%token <valuetext> INT FLOAT BOOL VOID STRING
+%token <valuetext> INTEGER_VALUE FLOAT_VALUE FALSE TRUE
 %token ASSIGN GT LT EQ NEQ GE LE AND OR XOR
 
-%left <Op> GT LT EQ NEQ GE LE
-%left <Op> ADD SUB
-%left <Op> MUL DIV
-%right  <Op> UMINUS
+%left  <Op> GT LT EQ NEQ GE LE
+%left  <Op> ADD SUB
+%left  <Op> MUL DIV
+%right <Op> UMINUS
 
+%type <valueType> type_specifier
 %start program
-
 
 %%
 
@@ -48,7 +51,7 @@ decl_list: decl_list decl {;}
 // one declaration of a variable or a function
 decl: var_decl {;}
 	| func_decl {;}
-	// | COMMENT {;}
+	| proto_decl {;}
 	;
 
 // variable declaration
@@ -65,17 +68,20 @@ var: IDENTIFIER {;}
    | IDENTIFIER ASSIGN expression {;}
    ;
 
-type_specifier: INT {;}
-			  | FLOAT {;}
-			  | BOOL {;}
-			  | VOID {;}
-			  | STRING {;}
+type_specifier: INT {$$ = TYPEINT;}
+			  | FLOAT {$$ = TYPEFLOAT;}
+			  | BOOL {$$ = TYPEBOOL;}
+			  | VOID {$$ = TYPEVOID;}
+			//   | STRING {$$ = TYPEINT;}
 			  ;
 
 // function declaration
 func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {;}
-		 | type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {;}
 		 ;
+
+proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {prog->children.push_back(make_unique<FuncAST>($1, *$2));}
+		  ;
+
 
 // parameters of a function declaration or a function definition
 params: param_list {;}
@@ -161,7 +167,7 @@ term: term MUL factor {;}
 	;
 
 factor: LEFTP expression RIGHTP {;}
-	  | SUB factor %prec UMINUS {cout << "---" << endl;}
+	  | SUB factor %prec UMINUS {;}
 	  | variable {;}
 	  | call {;}
 	  | value {;}

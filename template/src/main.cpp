@@ -6,6 +6,8 @@
 #include <getopt.h>
 
 #include <main.h>
+#include "../include/utils.h"
+#include "../include/declaration.h"
 
 using namespace std;
 
@@ -36,11 +38,12 @@ enum Option
 	OPTION_HELP
 };
 
+Program* prog = new Program();
 
 int main(int argc, char** argv)
 {
-	const int req_arg = required_argument, /*opt_arg = optional_argument,*/
-			no_arg  = no_argument;
+	// const int req_arg = required_argument; /*opt_arg = optional_argument,*/
+	const int no_arg  = no_argument;
 	static const struct option long_options[] =
     {
         {"debug",         no_arg,  nullptr, OPTION_DEBUG},
@@ -67,6 +70,13 @@ int main(int argc, char** argv)
 	if(option_debug)
 		debug("test");
 	yyparse();
+	if(prog){
+		
+		prog->print();
+	}
+	else {
+		cout << "nothing" << endl;
+	}
 	return 0;
 }
 

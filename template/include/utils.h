@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 // type of statements
 #define STMTDEFAULT -1
@@ -22,15 +23,16 @@
 #define EXPRARRAY 4
 
 // the type of returned value of the expression
-#define VALUEDEFAULT -1
-#define VALUEVOID 0
-#define VALUEINT 1
-#define VALUEFLOAT 2
-#define VALUECHAR 3
-#define VALUEBOOL 4
-#define VALUEARRAY 5
-#define VALUESTRING 6
-#define VALUEINVALID 16
+#define TYPEDEFAULT -1
+#define TYPEVOID 0
+#define TYPEINT 1
+#define TYPEFLOAT 2
+#define TYPECHAR 3
+#define TYPEBOOL 4
+#define TYPEINTPTR 5
+#define TYPEFLOATPTR 6
+#define TYPECHARPTR 7
+#define TYPEINVALID 16
 
 // operands
 #define OPADD 0 // arithmetic
@@ -51,7 +53,45 @@ class BaseAST
 {
 public:
     std::vector<std::unique_ptr<BaseAST>> children;
-    virtual ~BaseAST() {}
+    BaseAST(){;}
+    ~BaseAST() {;}
+    // ? 这里有没有问题
+    virtual std::string gettypename(int type){
+        switch (type)
+        {
+        case TYPEVOID:
+            return "void";
+        case TYPEINT:
+            return "int";
+        case TYPEFLOAT:
+            return "float";
+        case TYPECHAR:
+            return "char";
+        case TYPEBOOL:
+            return "bool";
+        case TYPEINTPTR:
+            return "int *";
+        case TYPEFLOATPTR:
+            return "float *";
+        case TYPECHARPTR:
+            return "char *";
+        default:
+            // error
+            return "error";
+            break;
+        }
+    }
+    virtual void padding(int level){
+        while(level--){
+            std::cout << "  ";
+        }
+        std::cout << "`-";
+        return ;
+    }
+    virtual void print(int level){
+        padding(level);
+        std::cout << "BASE" << std::endl;
+    }
 };
 
 class Program: public BaseAST
@@ -59,10 +99,16 @@ class Program: public BaseAST
 private:
     /* data */
 public:
-    Program(/* args */);
-    ~Program();
+    Program(/* args */){;}
+    ~Program(){;}
+    virtual void print(int level = 0){
+        std::cout << "AST: " << std::endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(0);
+        }
+    }
 };
-
 
 
 #endif

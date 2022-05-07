@@ -4,6 +4,7 @@
 using namespace std;
 // REAL    [-+]?(([0-9]*\.[0-9]+)|([0-9]+\.)|([0-9]+[eE][-+]?[0-9]+))
 // real: 12.02e-2, +12.2, -1e+2
+
 %}
 %option noyywrap
 WHITESPACE  [ \t\n]+
@@ -66,15 +67,15 @@ else {return ELSE;}
 false {return FALSE;}
 true {return TRUE;}
 
-{STRING} {cout << "str " << yytext << endl;return STRING_VALUE;}
+{STRING} {return STRING_VALUE;}
 
-{IDENTIFIER} {cout << "id " << yytext << endl; return IDENTIFIER;}
+{IDENTIFIER} {yylval.str = new string(yytext); return IDENTIFIER;}
 
-{INT} {cout << "int " << yytext << endl; return INTEGER_VALUE;}
+{INT} {yylval.valuetext = yytext; return INTEGER_VALUE;}
 
-{REAL} {cout << "real " << yytext << endl;return FLOAT_VALUE;}
+{REAL} {yylval.valuetext = yytext; return FLOAT_VALUE;}
 
-{COMMENTS} {cout << "comment " << yytext << endl;return COMMENT;}
+{COMMENTS} {return COMMENT;}
 
 %%
 
