@@ -71,7 +71,7 @@ else {return ELSE;}
 false {return FALSE;}
 true {return TRUE;}
 
-{STRING} {return STRING_VALUE;}
+{STRING} {yylval.valuetext = new string(yytext); return STRING_VALUE;}
 
 {IDENTIFIER} {yylval.str = new string(yytext); return IDENTIFIER;}
 

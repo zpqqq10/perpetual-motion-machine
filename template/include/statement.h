@@ -31,128 +31,92 @@ public:
         return this->stmtType;
     }
 
-    virtual void Print()
-    {
+    virtual void print(int level){
+        padding(level);
         cout << "STMT" << endl;
     }
 
     // virtual llvm::Value *CodeGen();
 };
 
-// expression
-class ExprAST : public StmtAST
-{
-    int exprType;
-
-public:
-    int valueType;
-    // ? a member for return value
-
-    ExprAST()
-    {
-        this->valueType = TYPEDEFAULT;
-        this->exprType = EXPRDEFAULT;
-        this->setStmtType(STMTEXPRESSION);
-    }
-
-    ~ExprAST() {}
-
-    void setExprType(int type)
-    {
-        this->exprType = type;
-    }
-
-    int getExprType()
-    {
-        return this->exprType;
-    }
-
-    void setValueType(int type)
-    {
-        this->valueType = type;
-    }
-
-    virtual int getValueType()
-    {
-        return this->valueType;
-    }
-
-    virtual void Print()
-    {
-        cout << "EXPR" << endl;
-    }
-
-    virtual llvm::Value *CodeGen();
-};
-
 // compound statement
-class CompoundAST : public StmtAST
+class CompoundAST : public BaseAST
 {
 
 public:
-
-    CompoundAST()
-    {
-    }
+    CompoundAST() {}
 
     ~CompoundAST() {}
-    virtual llvm::Value *CodeGen();
+
+    virtual void print(int level){
+        padding(level);
+        cout << "compound" << endl;
+    }
+    // virtual llvm::Value *CodeGen();
 };
 
 // selection statement
-class SelectionAST : public StmtAST
+class SelectionAST : public BaseAST
 {
 
 public:
-
-    SelectionAST()
-    {
-    }
+    SelectionAST() {}
 
     ~SelectionAST() {}
-    virtual llvm::Value *CodeGen();
+
+    virtual void print(int level){
+        padding(level);
+        cout << "selection" << endl;
+    }
+    // virtual llvm::Value *CodeGen();
 };
 
 // iteration statement of while
-class WhileAST : public StmtAST
+class WhileAST : public BaseAST
 {
 
 public:
-
-    WhileAST()
-    {
-    }
+    WhileAST() {}
 
     ~WhileAST() {}
-    virtual llvm::Value *CodeGen();
+
+    virtual void print(int level){
+        padding(level);
+        cout << "while" << endl;
+    }
+    // virtual llvm::Value *CodeGen();
 };
 
 // return statement
-class ReturnAST : public StmtAST
+class ReturnAST : public BaseAST
 {
 
 public:
-
-    ReturnAST()
-    {
-    }
+    ReturnAST() {}
 
     ~ReturnAST() {}
-    virtual llvm::Value *CodeGen();
+
+    virtual void print(int level){
+        padding(level);
+        cout << "return" << endl;
+    }
+    // virtual llvm::Value *CodeGen();
 };
 
-// comment
-class CommentAST : public StmtAST
+// comment (may be of no use)
+class CommentAST : public BaseAST
 {
 
 public:
-
-    CommentAST()
-    {
-    }
+    CommentAST() {}
 
     ~CommentAST() {}
-    virtual llvm::Value *CodeGen();
+
+    virtual void print(int level){
+        padding(level);
+        cout << "comment" << endl;
+    }
+    // virtual llvm::Value *CodeGen();
 };
 
 #endif

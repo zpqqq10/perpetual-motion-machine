@@ -8,67 +8,85 @@
 using namespace std;
 
 // variable declaration
-class VarDeclAST : public BaseAST{
+class VarDeclAST : public BaseAST
+{
 private:
     /* data */
     string name;
     int type;
-    int length;     // for pointer
-    int i_initial;  // for integer and bool
+    int length;    // for pointer
+    int i_initial; // for integer and bool
     float f_initial;
+
 public:
-    VarDeclAST(string n): name(n){
+    VarDeclAST(string n) : name(n)
+    {
         length = -1;
     }
-    VarDeclAST(string n, int len): name(n), length(len){;}
-    ~VarDeclAST(){;}
-    virtual void settype(int t){
+    VarDeclAST(string n, int len) : name(n), length(len) { ; }
+    ~VarDeclAST() { ; }
+    virtual void settype(int t)
+    {
         type = t;
     }
     virtual void print(int level)
     {
         padding(level);
         cout << GREEN << "VarDecl " << CYAN << name << White << " " << get_type_name(type);
-        if(length > 0){
+        if (length > 0)
+        {
             cout << "* ";
         }
         cout << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
         return;
     }
     // virtual llvm::Value *CodeGen();
 };
 
-// variable declaration list (that is, a line)
-class VarDeclList : public BaseAST{
+// temporary variable declaration list (that is, a line)
+class VarDeclList : public BaseAST
+{
 private:
-    /* data */
-    vector<VarDeclAST*> vars;
+    
+
 public:
-    VarDeclList(/* args */){;}
-    ~VarDeclList(){;}
-    virtual void settype(int t){
-        for(size_t i=0; i<vars.size(); i++){
+    vector<VarDeclAST *> vars;
+    VarDeclList(/* args */) { ; }
+    ~VarDeclList() { ; }
+    virtual void settype(int t)
+    {
+        for (size_t i = 0; i < vars.size(); i++)
+        {
             vars[i]->settype(t);
         }
     }
-    void addvar(VarDeclAST* var){
+    void addvar(VarDeclAST *var)
+    {
         vars.push_back(var);
     }
-    size_t size(){
+    size_t size()
+    {
         return vars.size();
     }
-    VarDeclAST* & operator[](int i){
+    VarDeclAST *&operator[](int i)
+    {
         return vars[i];
     }
-    void clear(){
+    void clear()
+    {
         vars.clear();
     }
     virtual void print(int level)
     {
-        // cout << vars.size() << endl;
+        padding(level);
+        cout << GREEN << "DeclStmt " << endl;
         for (size_t i = 0; i < vars.size(); i++)
         {
-            vars[i]->print(level);
+            vars[i]->print(level + 1);
         }
         return;
     }
@@ -76,14 +94,15 @@ public:
 };
 
 // parameter variable declaration
-class ParmVarDeclAST : public BaseAST{
+class ParmVarDeclAST : public BaseAST
+{
 private:
     /* data */
 public:
-    ParmVarDeclAST(){;}
+    ParmVarDeclAST() { ; }
     // with a third parameter for body
     // ParmVarDeclAST(int type, string& name): rettype(type), funcname(name){;}
-    ~ParmVarDeclAST(){;}
+    ~ParmVarDeclAST() { ; }
     virtual void print(int level)
     {
         padding(level);
@@ -103,15 +122,19 @@ private:
     /* data */
     int rettype;
     string funcname;
-    //TODO a member for body
+    // TODO a member for body
 public:
-    FuncAST(){;}
-    FuncAST(int type, string name): rettype(type), funcname(name){;}
-    ~FuncAST(){;}
+    FuncAST() { ; }
+    FuncAST(int type, string name) : rettype(type), funcname(name) { ; }
+    ~FuncAST() { ; }
     virtual void print(int level)
     {
         padding(level);
         cout << GREEN << "FunctionDecl " << CYAN << funcname << White << " " << get_type_name(rettype) << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
         return;
     }
     // virtual llvm::Value *CodeGen();
@@ -124,9 +147,10 @@ private:
     /* data */
     int rettype;
     string funcname;
+
 public:
-    ProtoAST(){;}
-    ~ProtoAST(){;}
+    ProtoAST() { ; }
+    ~ProtoAST() { ; }
     virtual void print(int level)
     {
         padding(level);

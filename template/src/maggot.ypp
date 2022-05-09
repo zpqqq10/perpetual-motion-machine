@@ -19,6 +19,7 @@ int yyerror(const char *s);
 %union
 {
 	BaseAST* node;
+	BaseAST** list;
 	int valueType;
 	std::string* str;
 	char Op;
@@ -41,7 +42,8 @@ int yyerror(const char *s);
 // %type <varDecl> var
 
 %type <valueType> type_specifier
-%type <node> value factor term variable expression addition relation_expr stmt
+%type <node> value factor term variable expression addition relation_expr stmt expression_stmt stmt_list compound_stmt vars var var_decl func_decl decl 
+
 %start program
 
 %%
@@ -49,34 +51,28 @@ int yyerror(const char *s);
 program: decl_list {;}
 	   ;
 
-decl_list: decl_list decl {;}
-		 | decl {;}
+decl_list: decl_list decl {prog->children.push_back($2);}
+		 | decl {prog->children.push_back($1);}
 		 ;
 
-// one declaration of global variables or a function
-// vardecllist.print(1)
-decl: var_decl {
-		for(size_t i = 0; i<vardecllist.size(); i++){
-			prog->children.push_back(vardecllist[i]);
-		}
-		vardecllist.clear();
-	}
-	| func_decl {;}
-	| proto_decl {;}
+// one declaration of global variables / function / prototype / comment
+decl: var_decl {$$ = $1;}
+	| func_decl {$$ = $1;}
+	| proto_decl {;}       // ! todo
+	| COMMENT {;} 
 	;
 
 // variable declaration
-var_decl: type_specifier vars SEMICOLON {vardecllist.settype($1);}
-		| COMMENT {;} // *this COMMENT raises a s/r conflict 
+var_decl: type_specifier vars SEMICOLON {$$ = $2; dynamic_cast<VarDeclList *>$2->settype($1);}
 		; 
 
-vars: vars COMMA var {;}
-	| var {;}
+vars: vars COMMA var {$$ = $1;dynamic_cast<VarDeclList *>$$->addvar(dynamic_cast<VarDeclAST *>$3);}
+	| var {$$ = new VarDeclList();dynamic_cast<VarDeclList *>$$->addvar(dynamic_cast<VarDeclAST *>$1);}
 	;
 
-var: IDENTIFIER {vardecllist.addvar(new VarDeclAST(*$1));}
-   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {vardecllist.addvar(new VarDeclAST(*$1, 999));}
-   | IDENTIFIER ASSIGN expression {vardecllist.addvar(new VarDeclAST(*$1));}
+var: IDENTIFIER {$$ = new VarDeclAST(*$1);}
+   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {;}  // ! todo
+   | IDENTIFIER ASSIGN expression {$$ = new VarDeclAST(*$1); $$->children.push_back($3);}
    ;
 
 type_specifier: INT {$$ = TYPEINT;}
@@ -86,74 +82,83 @@ type_specifier: INT {$$ = TYPEINT;}
 			//   | STRING {$$ = TYPEINT;}
 			  ;
 
-// function declaration
-func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {prog->children.push_back(new FuncAST($1, *$2));}
+// function definition
+func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {BaseAST* f = new FuncAST($1, *$2);f->children.push_back($6);$$ = f;}
 		 ;
 
-proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {prog->children.push_back(new FuncAST($1, *$2));}
+// prototype declaration
+proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {;} // ! todo
 		  ;
 
 
 // parameters of a function declaration or a function definition
-params: param_list {;}
-	  | VOID {;}
-	  | {;}
+params: param_list {;} // ! todo
+	  | VOID {;} // ! todo
+	  | {;} // ! todo
 	  ;
 
-param_list: param_list COMMA param {;}
-		  | param {;}
+param_list: param_list COMMA param {;} // ! todo
+		  | param {;} // ! todo
 		  ;
 
-param: type_specifier IDENTIFIER {;}
-	 | type_specifier IDENTIFIER LEFTSB RIGHTSB {;}
+param: type_specifier IDENTIFIER {;} // ! todo
+	 | type_specifier IDENTIFIER LEFTSB RIGHTSB {;} // ! todo
 	 ;
 
 // begin with { and end with }
-compound_stmt: LEFTB local_decls stmt_list RIGHTB {;}
+compound_stmt: LEFTB stmt_list RIGHTB {$$ = $2;}
 			 ;
 
-local_decls: local_decls var_decl {vardecllist.clear();;}
-		   | {;}
-		   ;
-
 // statements
-stmt_list: stmt_list stmt {;}
-		 | {;}
+stmt_list: stmt_list stmt {
+							if($1 == nullptr)
+								$$ = new CompoundStmtAST();
+							else
+								$$ = $1;
+							if($2 != nullptr)
+								$$->children.push_back($2);
+
+							}
+		 | {$$ = nullptr;}
 		 ;
 
 stmt: expression_stmt {$$ = $1;}
-	| compound_stmt {;}
-	| selection_stmt {;}
-	| iteration_stmt {;}
-	| return_stmt {;}
-	| COMMENT {;}
+	| compound_stmt {$$ = $1;}
+	| selection_stmt {;} 				// ! todo
+	| iteration_stmt {;}				// ! todo
+	| return_stmt {;} 					// ! todo
+	| var_decl {$$ = $1;}
+	| COMMENT {$$ = nullptr;}
 	;
 
 // expression
-expression_stmt: expression SEMICOLON {;}
+expression_stmt: expression SEMICOLON {$$ = $1;}
 			   | SEMICOLON {;}
 			   ;
 
 // if else
-selection_stmt: IF LEFTP expression RIGHTP stmt {;}
-			  | IF LEFTP expression RIGHTP stmt ELSE stmt {;} // *this dangling ELSE raises a s/r conflict 
+// this dangling ELSE raises a s/r conflict 
+selection_stmt: IF LEFTP expression RIGHTP stmt {;}							// ! todo
+			  | IF LEFTP expression RIGHTP stmt ELSE stmt {;} 				// ! todo
 			  ;
 
 // while
-iteration_stmt: WHILE LEFTP expression RIGHTP stmt {;}
+iteration_stmt: WHILE LEFTP expression RIGHTP stmt {;}						// ! todo
 			  ;
 
 // return
-return_stmt: RETURN SEMICOLON {;}
-		   | RETURN expression SEMICOLON {;}
+return_stmt: RETURN SEMICOLON {;}											// ! todo
+		   | RETURN expression SEMICOLON {;}								// ! todo
 		   ;
 
-expression: variable ASSIGN expression {$$ = new BinaryOpAST(OPASSIGN); $$->children.push_back($1); $$->children.push_back($3);prog->children.push_back($$);}
+// expression
+expression: variable ASSIGN expression {$$ = new BinaryOpAST(OPASSIGN); $$->children.push_back($1); $$->children.push_back($3);}
 		  | relation_expr {$$ = $1;}
 		  ;
 
+// variable that could appear on the left of a operator
 variable: IDENTIFIER {$$ = new VarAST(*$1);}
-		| IDENTIFIER LEFTSB expression RIGHTSB {;}
+		| IDENTIFIER LEFTSB expression RIGHTSB {;}							// ! todo
 		;
 
 relation_expr: relation_expr LE addition { $$ = new BinaryOpAST(OPLE); $$->children.push_back($1); $$->children.push_back($3);}
@@ -172,6 +177,7 @@ addition: addition ADD term { $$ = new BinaryOpAST(OPADD); $$->children.push_bac
 		| term {$$ = $1;}
 		;
 
+// * or /
 term: term MUL factor { $$ = new BinaryOpAST(OPMUL); $$->children.push_back($1); $$->children.push_back($3);}
 	| term DIV factor { $$ = new BinaryOpAST(OPDIV); $$->children.push_back($1); $$->children.push_back($3);}
 	| factor {$$ = $1;}
@@ -180,26 +186,26 @@ term: term MUL factor { $$ = new BinaryOpAST(OPMUL); $$->children.push_back($1);
 factor: LEFTP expression RIGHTP {$$ = $2;}
 	  | SUB factor %prec UMINUS {$$ = new UnaryOpAST(OPUMINUS); $$->children.push_back($2); }
 	  | variable {$$ = $1;}
-	  | call {;}
+	  | call {;}									// ! todo
 	  | value {$$ = $1;}
 	  ;
 
-value: INTEGER_VALUE {$$ = new IntegerAST(stoi(*$1));debug("111,%d", stoi(*$1));}
+value: INTEGER_VALUE {$$ = new IntegerAST(stoi(*$1));}
 	 | FLOAT_VALUE {$$ = new IntegerAST(stof(*$1));}	
 	 | TRUE {$$ = new BoolAST(true);}
 	 | FALSE {$$ = new BoolAST(false);}
 	 ;
 
 // function call
-call: IDENTIFIER LEFTP args RIGHTP {;}
+call: IDENTIFIER LEFTP args RIGHTP {;}					// ! todo
 	;
 
 // args of a function call
-args: arg_list {;}
+args: arg_list {;}										// ! todo
 	| {;}
 	;
 
-arg_list: arg_list COMMA expression {;}
+arg_list: arg_list COMMA expression {;}					// ! todo
 		| expression {;}
 		;
 

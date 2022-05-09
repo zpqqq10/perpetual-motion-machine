@@ -14,9 +14,7 @@ using namespace std;
 class VoidAST : public BaseAST
 {
 public:
-    VoidAST()
-    {
-    }
+    VoidAST() {}
 
     void Print()
     {
@@ -31,21 +29,17 @@ class IntegerAST : public BaseAST
     int value;
 
 public:
-    IntegerAST(int v) : value(v)
-    {
-    }
+    IntegerAST(int v) : value(v) {}
 
     int getValue()
     {
         return this->value;
     }
 
-
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "IntegerLiteral " << White << " " << value;
-        cout << endl;
+        cout << GREEN << "IntegerLiteral " << White << " " << value << endl;
         return;
     }
 
@@ -57,9 +51,7 @@ class FloatAST : public BaseAST
     float value;
 
 public:
-    FloatAST(float v) : value(v)
-    {
-    }
+    FloatAST(float v) : value(v) {}
 
     float getValue()
     {
@@ -69,8 +61,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "FloatLiteral " << White << " " << value;
-        cout << endl;
+        cout << GREEN << "FloatLiteral " << White << " " << value << endl;
         return;
     }
 
@@ -82,9 +73,7 @@ class BoolAST : public BaseAST
     bool value;
 
 public:
-    BoolAST(bool v) : value(v)
-    {
-    }
+    BoolAST(bool v) : value(v) {}
 
     bool getValue()
     {
@@ -94,8 +83,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "BoolLiteral " << White << " " << (value ? "true" : "false");
-        cout << endl;
+        cout << GREEN << "BoolLiteral " << White << " " << (value ? "true" : "false") << endl;
 
         return;
     }
@@ -103,18 +91,18 @@ public:
     // llvm::Value *CodeGen();
 };
 
+// for binary operator
 class BinaryOpAST : public BaseAST
 {
     uint16_t type;
-    
+
 public:
-    BinaryOpAST(uint16_t t) : type(t)
-    {
-    }
+    BinaryOpAST(uint16_t t) : type(t) {}
+
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "BinaryOperator " << White << " " << get_op_name(type) ;
+        cout << GREEN << "BinaryOperator " << White << " " << get_op_name(type);
         cout << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
@@ -126,18 +114,40 @@ public:
     // llvm::Value *CodeGen();
 };
 
+// for unary operator
 class UnaryOpAST : public BaseAST
 {
     uint16_t type;
-    
+
 public:
-    UnaryOpAST(uint16_t t) : type(t)
-    {
-    }
+    UnaryOpAST(uint16_t t) : type(t) {}
+
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "UnaryOperator " << White << " " << get_op_name(type) ;
+        cout << GREEN << "UnaryOperator " << White << " " << get_op_name(type);
+        cout << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
+        return;
+    }
+
+    // llvm::Value *CodeGen();
+};
+
+
+class CompoundStmtAST : public BaseAST
+{
+
+public:
+    CompoundStmtAST() {}
+
+    virtual void print(int level)
+    {
+        padding(level);
+        cout << GREEN << "CompoundStmt";
         cout << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
@@ -154,9 +164,7 @@ class StringAST : public BaseAST
     string value;
 
 public:
-    StringAST()
-    {
-    }
+    StringAST() {}
 
     string &getValue()
     {
@@ -172,18 +180,20 @@ public:
 };
 
 /*** Variable ***/
-class VarAST : public BaseAST {
+class VarAST : public BaseAST
+{
     string identifier;
+
 public:
-    VarAST(string id) : identifier(id) {
+    VarAST(string id) : identifier(id) {}
 
-    }
-
-    string &getId() {
+    string &getId()
+    {
         return this->identifier;
     }
 
-    virtual void print(int level) {
+    virtual void print(int level)
+    {
         padding(level);
         cout << GREEN << "VarRefDecl " << White << " " << identifier << endl;
     }
@@ -244,28 +254,6 @@ public:
 //             params[i]->Print();
 //         }
 //         cout << ")" << endl;
-//     }
-
-//     llvm::Value *CodeGen();
-// };
-
-// /*** binary calculation ***/
-// class CalExpr : public Expr {
-//     exprPtr Left;
-//     exprPtr Right;
-//     string op;
-// public:
-//     CalExpr(Expr *Left, Expr *Right, string &op) : Left(Left), Right(Right), op(op) {
-//         this->setExprType(EXPRCAL);
-//         this->setValueType(VALUEDEFAULT); 
-//     }
-
-//     void Print() {
-//         cout << "(";
-//         this->Left->Print();
-//         cout << ")" << op << "(";
-//         this->Right->Print();
-//         cout << ")";
 //     }
 
 //     llvm::Value *CodeGen();
