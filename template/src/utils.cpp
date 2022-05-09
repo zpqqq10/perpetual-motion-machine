@@ -26,3 +26,43 @@ std::string get_type_name(int type)
 		break;
 	}
 }
+std::string get_op_name(int op)
+{
+	switch (op)
+	{
+	case OPADD:
+		return "+";
+	case OPSUB:
+		return "-";
+	case OPMUL:
+		return "*";
+	case OPDIV:
+		return "/";
+	case OPAND:
+		return "&";
+	case OPOR:
+		return "|";
+	case OPXOR:
+		return "^";
+	case OPGT:
+		return ">";
+	case OPLT:
+		return "<";
+	case OPEQ:
+		return "==";
+	case OPNEQ:
+		return "!=";
+	case OPLE:
+		return "<=";
+	case OPGE:
+		return ">=";	
+	case OPASSIGN:
+		return "=";	
+	case OPUMINUS:
+		return "-";	
+	default:
+		// error
+		return "invalid";
+		break;
+	}
+}

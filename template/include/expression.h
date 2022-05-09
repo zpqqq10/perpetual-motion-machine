@@ -96,6 +96,7 @@ public:
         padding(level);
         cout << GREEN << "BoolLiteral " << White << " " << (value ? "true" : "false");
         cout << endl;
+
         return;
     }
 
@@ -110,14 +111,38 @@ public:
     BinaryOpAST(uint16_t t) : type(t)
     {
     }
-
-
-
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "BinaryOperator " << White << " "  ;
+        cout << GREEN << "BinaryOperator " << White << " " << get_op_name(type) ;
         cout << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
+        return;
+    }
+
+    // llvm::Value *CodeGen();
+};
+
+class UnaryOpAST : public BaseAST
+{
+    uint16_t type;
+    
+public:
+    UnaryOpAST(uint16_t t) : type(t)
+    {
+    }
+    virtual void print(int level)
+    {
+        padding(level);
+        cout << GREEN << "UnaryOperator " << White << " " << get_op_name(type) ;
+        cout << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
         return;
     }
 
@@ -146,11 +171,11 @@ public:
     // llvm::Value *CodeGen();
 };
 
-/*** identifier ***/
-class IdentifierAST : public BaseAST {
+/*** Variable ***/
+class VarAST : public BaseAST {
     string identifier;
 public:
-    IdentifierAST(string id) : identifier(id) {
+    VarAST(string id) : identifier(id) {
 
     }
 
@@ -158,8 +183,9 @@ public:
         return this->identifier;
     }
 
-    void Print() {
-        cout << identifier;
+    virtual void print(int level) {
+        padding(level);
+        cout << GREEN << "VarRefDecl " << White << " " << identifier << endl;
     }
 
     // llvm::Value *CodeGen();

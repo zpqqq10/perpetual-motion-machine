@@ -48,7 +48,8 @@
 #define OPNEQ 10
 #define OPLE 11
 #define OPGE 12
-
+#define OPASSIGN 13
+#define OPUMINUS 14
 // COLOR
 #define CANCEL "\e[0m"
 #define RED "\e[1;31m"
@@ -62,7 +63,7 @@
 #define CLEAR "\e[1;1H\e[2J"
 
 std::string get_type_name(int type);
-
+std::string get_op_name(int op);
 class BaseAST
 {
 public:
