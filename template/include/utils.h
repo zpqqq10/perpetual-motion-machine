@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include <string>
-
+#include <iostream>
 // type of statements
 #define STMTDEFAULT -1
 #define STMTEXPRESSION 0
@@ -61,38 +61,14 @@
 #define White "\e[0m"
 #define CLEAR "\e[1;1H\e[2J"
 
+std::string get_type_name(int type);
+
 class BaseAST
 {
 public:
-    std::vector<std::unique_ptr<BaseAST>> children;
+    std::vector<BaseAST*> children;
     BaseAST(){;}
     ~BaseAST() {;}
-    // ? 这里有没有问题
-    virtual std::string gettypename(int type){
-        switch (type)
-        {
-        case TYPEVOID:
-            return "void";
-        case TYPEINT:
-            return "int";
-        case TYPEFLOAT:
-            return "float";
-        case TYPECHAR:
-            return "char";
-        case TYPEBOOL:
-            return "bool";
-        case TYPEINTPTR:
-            return "int *";
-        case TYPEFLOATPTR:
-            return "float *";
-        case TYPECHARPTR:
-            return "char *";
-        default:
-            // error
-            return "invalid";
-            break;
-        }
-    }
     virtual void padding(int level){
         while(level--){
             std::cout << "  ";

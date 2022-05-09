@@ -1,4 +1,5 @@
 // clang -fsyntax-only -Xclang -ast-dump test/sample.c
+
 int x[10], test = 0x22, f = 0.25, num = 222 - -233;
 bool flag = false;
 
@@ -40,6 +41,10 @@ void sort(int a[], int low, int high)
 int main()
 {
     int i, m, n, a[2];
+    float f;
+    bool b;
+    f = 0.001;
+    b = true;
     i = 0;
     while(i < 10){
         x[i] = input();

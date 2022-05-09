@@ -28,15 +28,11 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "VarDecl " << CYAN << name << White << " " << gettypename(type);
+        cout << GREEN << "VarDecl " << CYAN << name << White << " " << get_type_name(type);
         if(length > 0){
             cout << "* ";
         }
         cout << endl;
-        // for (int i = 0; i < children.size(); i++)
-        // {
-        //     children[i]->print(level + 1);
-        // }
         return;
     }
     // virtual llvm::Value *CodeGen();
@@ -46,7 +42,7 @@ public:
 class VarDeclList : public BaseAST{
 private:
     /* data */
-    vector<unique_ptr<VarDeclAST>> vars;
+    vector<VarDeclAST*> vars;
 public:
     VarDeclList(/* args */){;}
     ~VarDeclList(){;}
@@ -55,13 +51,13 @@ public:
             vars[i]->settype(t);
         }
     }
-    void addvar(unique_ptr<VarDeclAST> var){
-        vars.push_back(move(var));
+    void addvar(VarDeclAST* var){
+        vars.push_back(var);
     }
     size_t size(){
         return vars.size();
     }
-    unique_ptr<VarDeclAST> & operator[](int i){
+    VarDeclAST* & operator[](int i){
         return vars[i];
     }
     void clear(){
@@ -115,11 +111,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "FunctionDecl " << CYAN << funcname << White << " " << gettypename(rettype) << endl;
-        // for (int i = 0; i < children.size(); i++)
-        // {
-        //     children[i]->print(level + 1);
-        // }
+        cout << GREEN << "FunctionDecl " << CYAN << funcname << White << " " << get_type_name(rettype) << endl;
         return;
     }
     // virtual llvm::Value *CodeGen();

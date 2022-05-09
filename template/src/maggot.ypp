@@ -1,8 +1,9 @@
 %{
 #include <iostream>
 #include <string>
-#include "../include/main.h"
-#include "../include/declaration.h"
+#include "main.h"
+#include "declaration.h"
+#include "expression.h"
 using namespace std;
 
 extern Program* prog;
@@ -17,12 +18,12 @@ int yyerror(const char *s);
 
 %union
 {
-	// unique_ptr<BaseAST> base;
-	// VarDeclAST* varDecl;
+	BaseAST* node;
 	int valueType;
 	std::string* str;
 	char Op;
 	std::string* valuetext;
+	// BaseAST* node;
 }
 
 %token COLON SEMICOLON COMMA LEFTP RIGHTP LEFTB RIGHTB LEFTSB RIGHTSB DQUOTE SQUOTE
@@ -38,8 +39,9 @@ int yyerror(const char *s);
 %right <Op> UMINUS
 
 // %type <varDecl> var
-%type <str> value
+
 %type <valueType> type_specifier
+%type <node> value factor term
 %start program
 
 %%
@@ -55,7 +57,7 @@ decl_list: decl_list decl {;}
 // vardecllist.print(1)
 decl: var_decl {
 		for(size_t i = 0; i<vardecllist.size(); i++){
-			prog->children.push_back(move(vardecllist[i]));
+			prog->children.push_back(vardecllist[i]);
 		}
 		vardecllist.clear();
 	}
@@ -72,9 +74,9 @@ vars: vars COMMA var {;}
 	| var {;}
 	;
 
-var: IDENTIFIER {vardecllist.addvar(make_unique<VarDeclAST>(*$1));}
-   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {vardecllist.addvar(make_unique<VarDeclAST>(*$1, 999));}
-   | IDENTIFIER ASSIGN expression {vardecllist.addvar(make_unique<VarDeclAST>(*$1));}
+var: IDENTIFIER {vardecllist.addvar(new VarDeclAST(*$1));}
+   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {vardecllist.addvar(new VarDeclAST(*$1, 999));}
+   | IDENTIFIER ASSIGN expression {vardecllist.addvar(new VarDeclAST(*$1));}
    ;
 
 type_specifier: INT {$$ = TYPEINT;}
@@ -85,10 +87,10 @@ type_specifier: INT {$$ = TYPEINT;}
 			  ;
 
 // function declaration
-func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {prog->children.push_back(make_unique<FuncAST>($1, *$2));}
+func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {prog->children.push_back(new FuncAST($1, *$2));}
 		 ;
 
-proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {prog->children.push_back(make_unique<FuncAST>($1, *$2));}
+proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {prog->children.push_back(new FuncAST($1, *$2));}
 		  ;
 
 
@@ -170,8 +172,18 @@ addition: addition ADD term {;}
 		| term {;}
 		;
 
-term: term MUL factor {;}
+term: term MUL factor {
+// 						debug("$1 %d", *$1 == nullptr);
+// 						unique_ptr<BaseAST> t = make_unique<BinaryOpAST>(OPMUL);
+// 						debug("b %d", t == *$1);
+// 						debug("$3 %d", *$3 == nullptr);
+// 						 t->children.push_back(move(*$3));
+// 						debug("$3 %d", *$3 == nullptr);
+// 						 debug("a %d", t == nullptr);
+// 						 prog->children.push_back(move(t));
+						 }
 	| term DIV factor {;}
+	// debug("term $1 %d", *$1 == nullptr);$$ = $1;debug("term $1 %d", *$1 == nullptr);
 	| factor {;}
 	;
 
@@ -183,8 +195,7 @@ factor: LEFTP expression RIGHTP {;}
 	  ;
 
 value: INTEGER_VALUE {;}
-	//  | SUB INTEGER_VALUE {;}
-	 | FLOAT_VALUE {;}
+	 | FLOAT_VALUE {;}	
 	 | TRUE {;}
 	 | FALSE {;}
 	 ;

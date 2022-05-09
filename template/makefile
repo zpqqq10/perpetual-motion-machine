@@ -7,8 +7,9 @@ CXXFLAGS = -Wall -fPIC -I $(INCLUDEDIR)
 
 OBJS=\
 	src/main.o \
+	src/utils.o \
 	src/y.tab.o \
-	src/lex.yy.o 
+	src/lex.yy.o
 	
 
 maggot: $(OBJS)

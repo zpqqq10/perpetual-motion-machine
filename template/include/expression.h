@@ -5,7 +5,7 @@
 #include <iostream>
 #include <memory>
 #include "utils.h"
-
+#include "main.h"
 using namespace std;
 
 /********************************* 这个还要改的 *****************************************/
@@ -40,9 +40,13 @@ public:
         return this->value;
     }
 
-    void Print()
+
+    virtual void print(int level)
     {
-        ;
+        padding(level);
+        cout << GREEN << "IntegerLiteral " << White << " " << value;
+        cout << endl;
+        return;
     }
 
     // llvm::Value *CodeGen();
@@ -50,21 +54,24 @@ public:
 
 class FloatAST : public BaseAST
 {
-    double value;
+    float value;
 
 public:
-    FloatAST(double v) : value(v)
+    FloatAST(float v) : value(v)
     {
     }
 
-    double getValue()
+    float getValue()
     {
         return this->value;
     }
 
-    void Print()
+    virtual void print(int level)
     {
-        ;
+        padding(level);
+        cout << GREEN << "FloatLiteral " << White << " " << value;
+        cout << endl;
+        return;
     }
 
     // llvm::Value *CodeGen();
@@ -84,9 +91,34 @@ public:
         return this->value;
     }
 
-    void Print()
+    virtual void print(int level)
     {
-        cout << "bool: " << value << endl;
+        padding(level);
+        cout << GREEN << "BoolLiteral " << White << " " << (value ? "true" : "false");
+        cout << endl;
+        return;
+    }
+
+    // llvm::Value *CodeGen();
+};
+
+class BinaryOpAST : public BaseAST
+{
+    uint16_t type;
+    
+public:
+    BinaryOpAST(uint16_t t) : type(t)
+    {
+    }
+
+
+
+    virtual void print(int level)
+    {
+        padding(level);
+        cout << GREEN << "BinaryOperator " << White << " "  ;
+        cout << endl;
+        return;
     }
 
     // llvm::Value *CodeGen();
@@ -132,7 +164,6 @@ public:
 
     // llvm::Value *CodeGen();
 };
-// typedef unique_ptr<Identifier> idPtr;
 
 // /*** array element ***/
 // class ArrEExpr: public Expr {

@@ -1,6 +1,8 @@
 %{
 #include <iostream>
-#include "../include/declaration.h"
+#include "declaration.h"
+#include "expression.h"
+#include "utils.h"
 #include "y.tab.h"
 using namespace std;
 // REAL    [-+]?(([0-9]*\.[0-9]+)|([0-9]+\.)|([0-9]+[eE][-+]?[0-9]+))
@@ -8,6 +10,7 @@ using namespace std;
 
 %}
 %option noyywrap
+%option nounput
 WHITESPACE  [ \t\n]+
 IDENTIFIER  [_a-zA-Z][_a-zA-Z0-9]*
 Digits  ([0-9]+)
