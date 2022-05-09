@@ -1,5 +1,6 @@
 %{
 #include <iostream>
+#include "../include/declaration.h"
 #include "y.tab.h"
 using namespace std;
 // REAL    [-+]?(([0-9]*\.[0-9]+)|([0-9]+\.)|([0-9]+[eE][-+]?[0-9]+))
@@ -71,9 +72,9 @@ true {return TRUE;}
 
 {IDENTIFIER} {yylval.str = new string(yytext); return IDENTIFIER;}
 
-{INT} {yylval.valuetext = yytext; return INTEGER_VALUE;}
+{INT} {yylval.valuetext = new string(yytext); return INTEGER_VALUE;}
 
-{REAL} {yylval.valuetext = yytext; return FLOAT_VALUE;}
+{REAL} {yylval.valuetext = new string(yytext); return FLOAT_VALUE;}
 
 {COMMENTS} {return COMMENT;}
 

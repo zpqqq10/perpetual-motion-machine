@@ -2,11 +2,11 @@
 #include <iostream>
 #include <string>
 #include "../include/main.h"
-#include "../include/utils.h"
 #include "../include/declaration.h"
 using namespace std;
 
 extern Program* prog;
+VarDeclList vardecllist;
 
 extern int yylex(void);
 
@@ -17,11 +17,12 @@ int yyerror(const char *s);
 
 %union
 {
-	// BaseAST* base;
+	// unique_ptr<BaseAST> base;
+	// VarDeclAST* varDecl;
 	int valueType;
 	std::string* str;
 	char Op;
-	char* valuetext;
+	std::string* valuetext;
 }
 
 %token COLON SEMICOLON COMMA LEFTP RIGHTP LEFTB RIGHTB LEFTSB RIGHTSB DQUOTE SQUOTE
@@ -36,6 +37,8 @@ int yyerror(const char *s);
 %left  <Op> MUL DIV
 %right <Op> UMINUS
 
+// %type <varDecl> var
+%type <str> value
 %type <valueType> type_specifier
 %start program
 
@@ -48,14 +51,20 @@ decl_list: decl_list decl {;}
 		 | decl {;}
 		 ;
 
-// one declaration of a variable or a function
-decl: var_decl {;}
+// one declaration of global variables or a function
+// vardecllist.print(1)
+decl: var_decl {
+		for(size_t i = 0; i<vardecllist.size(); i++){
+			prog->children.push_back(move(vardecllist[i]));
+		}
+		vardecllist.clear();
+	}
 	| func_decl {;}
 	| proto_decl {;}
 	;
 
 // variable declaration
-var_decl: type_specifier vars SEMICOLON {;}
+var_decl: type_specifier vars SEMICOLON {vardecllist.settype($1);}
 		| COMMENT {;} // *this COMMENT raises a s/r conflict 
 		; 
 
@@ -63,9 +72,9 @@ vars: vars COMMA var {;}
 	| var {;}
 	;
 
-var: IDENTIFIER {;}
-   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {;}
-   | IDENTIFIER ASSIGN expression {;}
+var: IDENTIFIER {vardecllist.addvar(make_unique<VarDeclAST>(*$1));}
+   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {vardecllist.addvar(make_unique<VarDeclAST>(*$1, 999));}
+   | IDENTIFIER ASSIGN expression {vardecllist.addvar(make_unique<VarDeclAST>(*$1));}
    ;
 
 type_specifier: INT {$$ = TYPEINT;}
@@ -76,7 +85,7 @@ type_specifier: INT {$$ = TYPEINT;}
 			  ;
 
 // function declaration
-func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {;}
+func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {prog->children.push_back(make_unique<FuncAST>($1, *$2));}
 		 ;
 
 proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {prog->children.push_back(make_unique<FuncAST>($1, *$2));}
@@ -101,7 +110,7 @@ param: type_specifier IDENTIFIER {;}
 compound_stmt: LEFTB local_decls stmt_list RIGHTB {;}
 			 ;
 
-local_decls: local_decls var_decl {;}
+local_decls: local_decls var_decl {vardecllist.clear();;}
 		   | {;}
 		   ;
 

@@ -1,4 +1,6 @@
+// clang -fsyntax-only -Xclang -ast-dump test/sample.c
 int x[10], test = 0x22, f = 0.25, num = 222 - -233;
+bool flag = false;
 
 void sort(int a[], int low, int high);
 int minloc (int a[], int low, int high)
@@ -49,4 +51,8 @@ int main()
         output(x[i]);
         i = i + 1;
     }
+    {
+        output(233);
+    }
+    return 0;
 }

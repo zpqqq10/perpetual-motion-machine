@@ -39,6 +39,7 @@ enum Option
 };
 
 Program* prog = new Program();
+extern VarDeclList vardecllist;
 
 int main(int argc, char** argv)
 {
@@ -71,7 +72,6 @@ int main(int argc, char** argv)
 		debug("test");
 	yyparse();
 	if(prog){
-		
 		prog->print();
 	}
 	else {

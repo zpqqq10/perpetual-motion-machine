@@ -49,6 +49,18 @@
 #define OPLE 11
 #define OPGE 12
 
+// COLOR
+#define CANCEL "\e[0m"
+#define RED "\e[1;31m"
+#define GREEN "\e[0;32m"
+#define YELLOW "\e[1;33m"
+#define BLUE "\e[1;34m"
+#define PURPLE "\e[1;35m"
+#define CYAN "\e[1;36m"
+#define WHITE "\e[1;37m"
+#define White "\e[0m"
+#define CLEAR "\e[1;1H\e[2J"
+
 class BaseAST
 {
 public:
@@ -77,7 +89,7 @@ public:
             return "char *";
         default:
             // error
-            return "error";
+            return "invalid";
             break;
         }
     }
