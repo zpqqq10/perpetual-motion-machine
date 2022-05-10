@@ -42,8 +42,7 @@ int yyerror(const char *s);
 // %type <varDecl> var
 
 %type <valueType> type_specifier
-%type <node> value factor term variable expression addition relation_expr stmt expression_stmt stmt_list compound_stmt vars var var_decl func_decl decl 
-
+%type <node> value factor term variable expression addition relation_expr stmt expression_stmt stmt_list compound_stmt vars var var_decl func_decl decl proto_decl params param_list param return_stmt selection_stmt iteration_stmt call args arg_list
 %start program
 
 %%
@@ -58,7 +57,7 @@ decl_list: decl_list decl {prog->children.push_back($2);}
 // one declaration of global variables / function / prototype / comment
 decl: var_decl {$$ = $1;}
 	| func_decl {$$ = $1;}
-	| proto_decl {;}       // ! todo
+	| proto_decl {$$ = $1;}
 	| COMMENT {;} 
 	;
 
@@ -71,7 +70,7 @@ vars: vars COMMA var {$$ = $1;dynamic_cast<VarDeclList *>$$->addvar(dynamic_cast
 	;
 
 var: IDENTIFIER {$$ = new VarDeclAST(*$1);}
-   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {;}  // ! todo
+   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {$$ = new VarDeclAST(*$1, stoi(*$3));}
    | IDENTIFIER ASSIGN expression {$$ = new VarDeclAST(*$1); $$->children.push_back($3);}
    ;
 
@@ -83,26 +82,25 @@ type_specifier: INT {$$ = TYPEINT;}
 			  ;
 
 // function definition
-func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {BaseAST* f = new FuncAST($1, *$2);f->children.push_back($6);$$ = f;}
+func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {BaseAST* f = new FuncAST($1, *$2);f->children.push_back($4);f->children.push_back($6);$$ = f;}
 		 ;
 
 // prototype declaration
-proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {;} // ! todo
+proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {BaseAST* f = new ProtoAST($1, *$2);f->children.push_back($4);$$ = f;} 
 		  ;
 
 
 // parameters of a function declaration or a function definition
-params: param_list {;} // ! todo
-	  | VOID {;} // ! todo
-	  | {;} // ! todo
-	  ;
+params: param_list {$$ = $1;} 
+	  | VOID {$$ = new ParmVarDeclList(true);} 
+	  | {$$ = new ParmVarDeclList(true);} 
 
-param_list: param_list COMMA param {;} // ! todo
-		  | param {;} // ! todo
+param_list: param_list COMMA param {$$ = $1;dynamic_cast<ParmVarDeclList *>$$->addvar(dynamic_cast<ParmVarDeclAST *>$3);}
+		  | param {$$ = new ParmVarDeclList();dynamic_cast<ParmVarDeclList *>$$->addvar(dynamic_cast<ParmVarDeclAST *>$1);} 
 		  ;
 
-param: type_specifier IDENTIFIER {;} // ! todo
-	 | type_specifier IDENTIFIER LEFTSB RIGHTSB {;} // ! todo
+param: type_specifier IDENTIFIER {$$ = new ParmVarDeclAST(*$2); dynamic_cast<ParmVarDeclAST *>$$->settype($1);} 
+	 | type_specifier IDENTIFIER LEFTSB RIGHTSB {$$ = new ParmVarDeclAST(*$2, true); dynamic_cast<ParmVarDeclAST *>$$->settype($1);} 
 	 ;
 
 // begin with { and end with }
@@ -124,9 +122,9 @@ stmt_list: stmt_list stmt {
 
 stmt: expression_stmt {$$ = $1;}
 	| compound_stmt {$$ = $1;}
-	| selection_stmt {;} 				// ! todo
-	| iteration_stmt {;}				// ! todo
-	| return_stmt {;} 					// ! todo
+	| selection_stmt {$$ = $1;} 		
+	| iteration_stmt {$$ = $1;}			
+	| return_stmt {$$ = $1;} 			
 	| var_decl {$$ = $1;}
 	| COMMENT {$$ = nullptr;}
 	;
@@ -138,17 +136,17 @@ expression_stmt: expression SEMICOLON {$$ = $1;}
 
 // if else
 // this dangling ELSE raises a s/r conflict 
-selection_stmt: IF LEFTP expression RIGHTP stmt {;}							// ! todo
-			  | IF LEFTP expression RIGHTP stmt ELSE stmt {;} 				// ! todo
+selection_stmt: IF LEFTP expression RIGHTP stmt {$$ = new SelectionStmt(); $$->children.push_back($3); $$->children.push_back($5);}		
+			  | IF LEFTP expression RIGHTP stmt ELSE stmt {$$ = new SelectionStmt(); $$->children.push_back($3); $$->children.push_back($5); $$->children.push_back($7);} 
 			  ;
 
 // while
-iteration_stmt: WHILE LEFTP expression RIGHTP stmt {;}						// ! todo
+iteration_stmt: WHILE LEFTP expression RIGHTP stmt {$$ = new IterationStmt(); $$->children.push_back($3); $$->children.push_back($5);}			
 			  ;
 
-// return
-return_stmt: RETURN SEMICOLON {;}											// ! todo
-		   | RETURN expression SEMICOLON {;}								// ! todo
+// returnvariable
+return_stmt: RETURN SEMICOLON {$$ = new ReturnStmt();}											
+		   | RETURN expression SEMICOLON {$$ = new ReturnStmt(); $$->children.push_back($2);}	
 		   ;
 
 // expression
@@ -158,7 +156,7 @@ expression: variable ASSIGN expression {$$ = new BinaryOpAST(OPASSIGN); $$->chil
 
 // variable that could appear on the left of a operator
 variable: IDENTIFIER {$$ = new VarAST(*$1);}
-		| IDENTIFIER LEFTSB expression RIGHTSB {;}							// ! todo
+		| IDENTIFIER LEFTSB expression RIGHTSB {$$ = new VarAST(*$1);}							//Clang does not print more info
 		;
 
 relation_expr: relation_expr LE addition { $$ = new BinaryOpAST(OPLE); $$->children.push_back($1); $$->children.push_back($3);}
@@ -186,7 +184,7 @@ term: term MUL factor { $$ = new BinaryOpAST(OPMUL); $$->children.push_back($1);
 factor: LEFTP expression RIGHTP {$$ = $2;}
 	  | SUB factor %prec UMINUS {$$ = new UnaryOpAST(OPUMINUS); $$->children.push_back($2); }
 	  | variable {$$ = $1;}
-	  | call {;}									// ! todo
+	  | call {$$ = $1;}									
 	  | value {$$ = $1;}
 	  ;
 
@@ -197,16 +195,16 @@ value: INTEGER_VALUE {$$ = new IntegerAST(stoi(*$1));}
 	 ;
 
 // function call
-call: IDENTIFIER LEFTP args RIGHTP {;}					// ! todo
+call: IDENTIFIER LEFTP args RIGHTP {$$ = new CallExpr(); $$->children.push_back($3);}					
 	;
 
 // args of a function call
-args: arg_list {;}										// ! todo
+args: arg_list {$$ = $1;}										
 	| {;}
 	;
 
-arg_list: arg_list COMMA expression {;}					// ! todo
-		| expression {;}
+arg_list: arg_list COMMA expression {$$ = $1; dynamic_cast<ArgsList *>$$->addvar(dynamic_cast<BaseAST *>$3);}					
+		| expression {$$ = new ArgsList(); dynamic_cast<ArgsList *>$$->addvar(dynamic_cast<BaseAST *>$1);}
 		;
 
 %%
