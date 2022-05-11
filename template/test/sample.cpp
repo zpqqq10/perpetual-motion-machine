@@ -39,10 +39,17 @@ void sort(int a[], int low, int high)
         i = i + 1;
     }
 }
+int input()
+{
+    return 1;
+}
+void output(int x)
+{
 
+}
 int main()
 {
-    int i, m, n, a[2];
+    int i, m, n, a[2],x[10];
     float f;
     bool b;
     f = 0.001;

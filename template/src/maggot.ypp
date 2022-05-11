@@ -50,15 +50,15 @@ int yyerror(const char *s);
 program: decl_list {;}
 	   ;
 
-decl_list: decl_list decl {prog->children.push_back($2);}
-		 | decl {prog->children.push_back($1);}
+decl_list: decl_list decl {if($2) prog->children.push_back($2);}
+		 | decl {if($1) prog->children.push_back($1);}
 		 ;
 
 // one declaration of global variables / function / prototype / comment
 decl: var_decl {$$ = $1;}
 	| func_decl {$$ = $1;}
 	| proto_decl {$$ = $1;}
-	| COMMENT {;} 
+	| COMMENT {$$ = nullptr;} 
 	;
 
 // variable declaration
@@ -117,7 +117,7 @@ stmt_list: stmt_list stmt {
 								$$->children.push_back($2);
 
 							}
-		 | {$$ = nullptr;}
+		 | {$$ = new CompoundStmtAST();}
 		 ;
 
 stmt: expression_stmt {$$ = $1;}
@@ -155,8 +155,8 @@ expression: variable ASSIGN expression {$$ = new BinaryOpAST(OPASSIGN); $$->chil
 		  ;
 
 // variable that could appear on the left of a operator
-variable: IDENTIFIER {$$ = new VarAST(*$1);}
-		| IDENTIFIER LEFTSB expression RIGHTSB {$$ = new VarAST(*$1);}							//Clang does not print more info
+variable: IDENTIFIER {$$ = new RefAST(*$1, REFVAR);}
+		| IDENTIFIER LEFTSB expression RIGHTSB {$$ = new ArraySubscriptExpr(); $$->children.push_back(new RefAST(*$1, REFVAR)); $$->children.push_back($3);}							//Clang does not print more info
 		;
 
 relation_expr: relation_expr LE addition { $$ = new BinaryOpAST(OPLE); $$->children.push_back($1); $$->children.push_back($3);}
@@ -195,12 +195,12 @@ value: INTEGER_VALUE {$$ = new IntegerAST(stoi(*$1));}
 	 ;
 
 // function call
-call: IDENTIFIER LEFTP args RIGHTP {$$ = new CallExpr(); $$->children.push_back($3);}					
+call: IDENTIFIER LEFTP args RIGHTP {$$ = new CallExpr(); $$->children.push_back(new RefAST(*$1, REFFUNC));if($3) $$->children.push_back($3); }					
 	;
 
 // args of a function call
 args: arg_list {$$ = $1;}										
-	| {;}
+	| {$$ = nullptr;}
 	;
 
 arg_list: arg_list COMMA expression {$$ = $1; dynamic_cast<ArgsList *>$$->addvar(dynamic_cast<BaseAST *>$3);}					

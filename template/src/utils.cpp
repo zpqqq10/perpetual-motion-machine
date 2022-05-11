@@ -66,3 +66,28 @@ std::string get_op_name(int op)
 		break;
 	}
 }
+std::string get_ref_name(int ref)
+{
+	switch(ref)
+	{
+	case REFFUNC:
+		return "Func";
+	case REFVAR:
+		return "Var";
+	default:
+		// error
+		return "invalid";
+		break;
+	}
+}
+void padding(int level)
+{
+	int i = 0;
+	while(i++ < level){
+		// if(i % 2 == 0) std::cout << "  ";
+		// else std::cout << "| ";
+		std::cout << "  ";
+	}
+	std::cout << "`-";
+	return ;
+}

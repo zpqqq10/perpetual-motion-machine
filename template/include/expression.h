@@ -177,12 +177,13 @@ public:
 };
 
 /*** Variable ***/
-class VarAST : public BaseAST
+class RefAST : public BaseAST
 {
     string identifier;
+    int type;
 
 public:
-    VarAST(string id) : identifier(id) {}
+    RefAST(string id, int type) : identifier(id),type(type) {}
 
     string &getId()
     {
@@ -192,12 +193,28 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "DeclRefExpr " << White << " " << identifier << endl;
+        cout << GREEN << "DeclRefExpr " << RED << get_ref_name(type) << White << " " << identifier << endl;
     }
 
     // llvm::Value *CodeGen();
 };
 
+class ArraySubscriptExpr : public BaseAST
+{
+public:
+    ArraySubscriptExpr(){;}
+    ~ArraySubscriptExpr(){;}
+    virtual void print(int level)
+    {
+        padding(level);
+        cout << GREEN << "ArraySubscriptExpr" << White << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
+        return;
+    }
+};
 // call expr
 class CallExpr : public BaseAST
 {

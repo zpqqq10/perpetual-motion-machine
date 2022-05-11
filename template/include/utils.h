@@ -62,21 +62,19 @@
 #define White "\e[0m"
 #define CLEAR "\e[1;1H\e[2J"
 
+#define REFVAR 0
+#define REFFUNC 1
 std::string get_type_name(int type);
 std::string get_op_name(int op);
+std::string get_ref_name(int ref);
+void padding(int level);
+
 class BaseAST
 {
 public:
     std::vector<BaseAST*> children;
     BaseAST(){;}
     ~BaseAST() {;}
-    virtual void padding(int level){
-        while(level--){
-            std::cout << "  ";
-        }
-        std::cout << "`-";
-        return ;
-    }
     virtual void print(int level){
         padding(level);
         std::cout << "BASE" << std::endl;
