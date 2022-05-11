@@ -8,97 +8,86 @@
 
 using namespace std;
 
-// parent object
-class StmtAST : public BaseAST
-{
-    int stmtType;
-
-public:
-    StmtAST()
-    {
-        this->stmtType = STMTDEFAULT;
-    }
-
-    ~StmtAST() {}
-
-    void setStmtType(int type)
-    {
-        this->stmtType = type;
-    }
-
-    int getStmtType()
-    {
-        return this->stmtType;
-    }
-
-    virtual void print(int level){
-        padding(level);
-        cout << "STMT" << endl;
-    }
-
-    // virtual llvm::Value *CodeGen();
-};
-
 // compound statement
-class CompoundAST : public BaseAST
+class CompoundStmtAST : public BaseAST
 {
 
 public:
-    CompoundAST() {}
+    CompoundStmtAST() {}
 
-    ~CompoundAST() {}
-
-    virtual void print(int level){
+    virtual void print(int level)
+    {
         padding(level);
-        cout << "compound" << endl;
+        cout << PURPLE << "CompoundStmt" << White << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
+        return;
+    }
+
+    // llvm::Value *CodeGen();
+};
+
+// selection stmt
+class SelectionStmtAST : public BaseAST
+{
+private:
+    /* data */
+public:
+    SelectionStmtAST() { ; }
+    ~SelectionStmtAST() { ; }
+    virtual void print(int level)
+    {
+        padding(level);
+        cout << PURPLE << "IfStmt " << White << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
+        return;
     }
     // virtual llvm::Value *CodeGen();
 };
 
-// selection statement
-class SelectionAST : public BaseAST
+// iteration stmt
+class IterationStmtAST : public BaseAST
 {
-
+private:
+    /* data */
 public:
-    SelectionAST() {}
-
-    ~SelectionAST() {}
-
-    virtual void print(int level){
+    IterationStmtAST() { ; }
+    ~IterationStmtAST() { ; }
+    virtual void print(int level)
+    {
         padding(level);
-        cout << "selection" << endl;
+        cout << PURPLE << "WhileStmt " << White << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
+        return;
     }
     // virtual llvm::Value *CodeGen();
 };
 
-// iteration statement of while
-class WhileAST : public BaseAST
+// return stmt
+class ReturnStmtAST : public BaseAST
 {
-
+private:
+    /* data */
 public:
-    WhileAST() {}
-
-    ~WhileAST() {}
-
-    virtual void print(int level){
+    ReturnStmtAST() { ; }
+    ~ReturnStmtAST() { ; }
+    virtual void print(int level)
+    {
         padding(level);
-        cout << "while" << endl;
-    }
-    // virtual llvm::Value *CodeGen();
-};
-
-// return statement
-class ReturnAST : public BaseAST
-{
-
-public:
-    ReturnAST() {}
-
-    ~ReturnAST() {}
-
-    virtual void print(int level){
-        padding(level);
-        cout << "return" << endl;
+        cout << PURPLE << "ReturnStmt " << White << endl;
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            children[i]->print(level + 1);
+        }
+        return;
     }
     // virtual llvm::Value *CodeGen();
 };
@@ -112,7 +101,8 @@ public:
 
     ~CommentAST() {}
 
-    virtual void print(int level){
+    virtual void print(int level)
+    {
         padding(level);
         cout << "comment" << endl;
     }

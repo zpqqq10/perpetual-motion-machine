@@ -4,10 +4,10 @@
 #include "main.h"
 #include "declaration.h"
 #include "expression.h"
+#include "statement.h"
 using namespace std;
 
 extern Program* prog;
-VarDeclList vardecllist;
 
 extern int yylex(void);
 
@@ -78,7 +78,7 @@ type_specifier: INT {$$ = TYPEINT;}
 			  | FLOAT {$$ = TYPEFLOAT;}
 			  | BOOL {$$ = TYPEBOOL;}
 			  | VOID {$$ = TYPEVOID;}
-			//   | STRING {$$ = TYPEINT;}
+			  | STRING {$$ = TYPESTRING;}
 			  ;
 
 // function definition
@@ -136,17 +136,17 @@ expression_stmt: expression SEMICOLON {$$ = $1;}
 
 // if else
 // this dangling ELSE raises a s/r conflict 
-selection_stmt: IF LEFTP expression RIGHTP stmt {$$ = new SelectionStmt(); $$->children.push_back($3); $$->children.push_back($5);}		
-			  | IF LEFTP expression RIGHTP stmt ELSE stmt {$$ = new SelectionStmt(); $$->children.push_back($3); $$->children.push_back($5); $$->children.push_back($7);} 
+selection_stmt: IF LEFTP expression RIGHTP stmt {$$ = new SelectionStmtAST(); $$->children.push_back($3); $$->children.push_back($5);}		
+			  | IF LEFTP expression RIGHTP stmt ELSE stmt {$$ = new SelectionStmtAST(); $$->children.push_back($3); $$->children.push_back($5); $$->children.push_back($7);} 
 			  ;
 
 // while
-iteration_stmt: WHILE LEFTP expression RIGHTP stmt {$$ = new IterationStmt(); $$->children.push_back($3); $$->children.push_back($5);}			
+iteration_stmt: WHILE LEFTP expression RIGHTP stmt {$$ = new IterationStmtAST(); $$->children.push_back($3); $$->children.push_back($5);}			
 			  ;
 
 // returnvariable
-return_stmt: RETURN SEMICOLON {$$ = new ReturnStmt();}											
-		   | RETURN expression SEMICOLON {$$ = new ReturnStmt(); $$->children.push_back($2);}	
+return_stmt: RETURN SEMICOLON {$$ = new ReturnStmtAST();}											
+		   | RETURN expression SEMICOLON {$$ = new ReturnStmtAST(); $$->children.push_back($2);}	
 		   ;
 
 // expression
@@ -189,7 +189,8 @@ factor: LEFTP expression RIGHTP {$$ = $2;}
 	  ;
 
 value: INTEGER_VALUE {$$ = new IntegerAST(stoi(*$1));}
-	 | FLOAT_VALUE {$$ = new IntegerAST(stof(*$1));}	
+	 | FLOAT_VALUE {$$ = new FloatAST(stof(*$1));}	
+	 | STRING_VALUE {$$ = new StringAST(*$1);}	
 	 | TRUE {$$ = new BoolAST(true);}
 	 | FALSE {$$ = new BoolAST(false);}
 	 ;

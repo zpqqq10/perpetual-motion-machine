@@ -8,7 +8,6 @@
 #include "main.h"
 using namespace std;
 
-/********************************* 这个还要改的 *****************************************/
 
 /*** value ***/
 class VoidAST : public BaseAST
@@ -39,7 +38,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "IntegerLiteral " << White << " " << value << endl;
+        cout << PURPLE << "IntegerLiteral " << " " << CYAN << value << White << endl;
         return;
     }
 
@@ -61,7 +60,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "FloatLiteral " << White << " " << value << endl;
+        cout << PURPLE << "FloatLiteral " << " " << CYAN << value << White << endl;
         return;
     }
 
@@ -83,13 +82,36 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "BoolLiteral " << White << " " << (value ? "true" : "false") << endl;
-
+        cout << PURPLE << "BoolLiteral " << " " << CYAN << (value ? "true" : "false") << White << endl;
         return;
     }
 
     // llvm::Value *CodeGen();
 };
+
+
+class StringAST : public BaseAST
+{
+    string value;
+
+public:
+    StringAST(string v): value(v) {}
+
+    string &getValue()
+    {
+        return this->value;
+    }
+
+    virtual void print(int level)
+    {
+        padding(level);
+        cout << PURPLE << "StringLiteral " << " " << CYAN << value << White << endl;
+        return;
+    }
+
+    // llvm::Value *CodeGen();
+};
+
 
 // for binary operator
 class BinaryOpAST : public BaseAST
@@ -102,7 +124,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "BinaryOperator " << White << " " << get_op_name(type) << endl;
+        cout << PURPLE << "BinaryOperator " << " " << CYAN << get_op_name(type) << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -124,53 +146,12 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "UnaryOperator " << White << " " << get_op_name(type) << endl;
+        cout << PURPLE << "UnaryOperator " << " " << CYAN << get_op_name(type) << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
         }
         return;
-    }
-
-    // llvm::Value *CodeGen();
-};
-
-
-class CompoundStmtAST : public BaseAST
-{
-
-public:
-    CompoundStmtAST() {}
-
-    virtual void print(int level)
-    {
-        padding(level);
-        cout << GREEN << "CompoundStmt" << White << endl;
-        for (size_t i = 0; i < children.size(); i++)
-        {
-            children[i]->print(level + 1);
-        }
-        return;
-    }
-
-    // llvm::Value *CodeGen();
-};
-
-class StringAST : public BaseAST
-{
-    string value;
-
-public:
-    StringAST() {}
-
-    string &getValue()
-    {
-        return this->value;
-    }
-
-    void Print()
-    {
-        ;
     }
 
     // llvm::Value *CodeGen();
@@ -193,7 +174,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "DeclRefExpr " << RED << get_ref_name(type) << White << " " << identifier << endl;
+        cout << PURPLE << "DeclRefExpr " << RED << get_ref_name(type) << " " << CYAN << identifier << White  << endl;
     }
 
     // llvm::Value *CodeGen();
@@ -207,7 +188,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "ArraySubscriptExpr" << White << endl;
+        cout << PURPLE << "ArraySubscriptExpr" << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -226,7 +207,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "CallExpr " << White << endl;
+        cout << PURPLE << "CallExpr " << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -261,63 +242,5 @@ public:
     }
     // virtual llvm::Value *CodeGen();
 };
-
-// /*** array element ***/
-// class ArrEExpr: public Expr {
-//     Identifier array;
-//     exprPtr index;
-// public:
-//     ArrEExpr(string &arr, Expr* ind): array(arr), index(ind){
-//         this->setExprType(EXPRARRAY);
-//     }
-
-//     ArrEExpr(string &arr): array(arr){
-//         this->index = nullptr;
-//         this->setExprType(EXPRARRAY);
-//     }
-
-//     string &getId(){
-//         return array.getId();
-//     }
-
-//     Expr* getIndex(){
-//         if(index)
-//             return index.get();
-//         return nullptr;
-//     }
-
-//     void Print() {
-//         cout << "array: " << array.getId() << '[' << index << ']' << endl;
-//     }
-
-//     llvm::Value* CodeGen();
-// };
-
-// /*** function call ***/
-// class Call : public Expr {
-//     idPtr func;
-//     vector<exprPtr> params;
-// public:
-//     Call(Expr *funcName, ExprList *params) {
-//         Identifier *p = static_cast<Identifier *>(funcName);
-//         this->func = idPtr(p);
-
-//         for (size_t i = 0, e = params->exprList.size(); i < e; i++) {
-//             this->params.push_back(exprPtr(params->exprList[i]));
-//         }
-//         this->setExprType(EXPRCALL);
-//     }
-
-//     void Print() {
-//         func->Print();
-//         cout << "(";
-//         for (size_t i = 0; i < params.size(); i++) {
-//             params[i]->Print();
-//         }
-//         cout << ")" << endl;
-//     }
-
-//     llvm::Value *CodeGen();
-// };
 
 #endif

@@ -20,6 +20,8 @@ std::string get_type_name(int type)
 		return "float *";
 	case TYPECHARPTR:
 		return "char *";
+	case TYPESTRING:
+		return "string";
 	default:
 		// error
 		return "invalid";

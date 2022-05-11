@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue May 10 22:05:28 2022
+# Make data base, printed on Wed May 11 13:16:24 2022
 
 # Variables
 
@@ -59,7 +59,7 @@ LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/n7utb
 # environment
-SSH_CONNECTION = 39.174.145.23 29159 10.0.16.4 22
+SSH_CONNECTION = 39.174.145.14 6725 10.0.16.4 22
 # environment
 PATH = /home/n7utb/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/bin/remote-cli:/home/n7utb/.local/bin:/home/n7utb/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # makefile (from 'makefile', line 2)
@@ -69,7 +69,7 @@ XDG_RUNTIME_DIR = /run/user/1002
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-ccd40002-6cab-4bc4-b0e1-214be25e6adf.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-e7828668-b549-4597-be43-ad4c18eb6478.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -111,7 +111,7 @@ MAKECMDGOALS := all
 # environment
 SHLVL = 1
 # environment
-XDG_SESSION_ID = 24534
+XDG_SESSION_ID = 25511
 # environment
 USER = n7utb
 # makefile
@@ -133,7 +133,7 @@ MAKEFLAGS = pqrR
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_CLIENT = 39.174.145.23 29159 22
+SSH_CLIENT = 39.174.145.14 6725 22
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
@@ -286,7 +286,6 @@ src/lex.yy.c: src/maggot.l
 #  File has not been updated.
 #  recipe to execute (from 'makefile', line 24):
 	$(LEX) --outfile=$@ $^ 
- 
 
 # files hash-table stats:
 # Load=15/1024=1%, Rehash=0, Collisions=0/37=0%
@@ -295,6 +294,7 @@ src/lex.yy.c: src/maggot.l
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
+ 
 
 # strcache buffers: 1 (0) / strings = 25 / storage = 238 B / avg = 9 B
 # current buf: size = 8162 B / used = 238 B / count = 25 / avg = 9 B
@@ -302,6 +302,6 @@ src/lex.yy.c: src/maggot.l
 # strcache performance: lookups = 41 / hit rate = 39%
 # hash-table stats:
 # Load=25/8192=0%, Rehash=0, Collisions=1/41=2%
-# Finished Make data base on Tue May 10 22:05:28 2022
+# Finished Make data base on Wed May 11 13:16:24 2022
 
  

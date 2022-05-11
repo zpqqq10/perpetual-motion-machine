@@ -51,8 +51,6 @@ public:
 class VarDeclList : public BaseAST
 {
 private:
-    
-
 public:
     vector<VarDeclAST *> vars;
     VarDeclList(/* args */) { ; }
@@ -83,7 +81,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "DeclStmt " << endl;
+        cout << PURPLE << "DeclStmt " << White << endl;
         for (size_t i = 0; i < vars.size(); i++)
         {
             vars[i]->print(level + 1);
@@ -100,8 +98,8 @@ private:
     /* data */
     string name;
     int type;
-    bool is_pointer;    // for pointer
-    int i_initial; // for integer and bool
+    bool is_pointer; // for pointer
+    int i_initial;   // for integer and bool
     float f_initial;
 
 public:
@@ -138,6 +136,7 @@ class ParmVarDeclList : public BaseAST
 {
 private:
     bool is_void;
+
 public:
     vector<ParmVarDeclAST *> parms;
     ParmVarDeclList() { is_void = false; }
@@ -145,7 +144,7 @@ public:
     // with a third parameter for body
     // ParmVarDeclList(int type, string& name): rettype(type), funcname(name){;}
     ~ParmVarDeclList() { ; }
-     void addvar(ParmVarDeclAST *var)
+    void addvar(ParmVarDeclAST *var)
     {
         parms.push_back(var);
     }
@@ -163,11 +162,12 @@ public:
     }
     virtual void print(int level)
     {
-        if (!is_void) { // if it is VOID, then print nothing
+        if (!is_void)
+        { // if it is VOID, then print nothing
             for (size_t i = 0; i < parms.size(); i++)
-                {
-                    parms[i]->print(level);
-                }
+            {
+                parms[i]->print(level);
+            }
         }
         return;
     }
@@ -214,70 +214,6 @@ public:
     {
         padding(level);
         cout << GREEN << "FunctionDecl " << CYAN << funcname << White << " " << get_type_name(rettype) << endl;
-        for (size_t i = 0; i < children.size(); i++)
-        {
-            children[i]->print(level + 1);
-        }
-        return;
-    }
-    // virtual llvm::Value *CodeGen();
-};
-
-// selection stmt
-class SelectionStmt : public BaseAST
-{
-private:
-    /* data */
-public:
-    SelectionStmt() { ; }
-    ~SelectionStmt() { ; }
-    virtual void print(int level)
-    {
-        padding(level);
-        cout << GREEN << "IfStmt " << White << endl;
-        for (size_t i = 0; i < children.size(); i++)
-        {
-            children[i]->print(level + 1);
-        }
-        return;
-    }
-    // virtual llvm::Value *CodeGen();
-};
-
-// iteration stmt
-class IterationStmt : public BaseAST
-{
-private:
-    /* data */
-public:
-    IterationStmt() { ; }
-    ~IterationStmt() { ; }
-    virtual void print(int level)
-    {
-        padding(level);
-        cout << GREEN << "WhileStmt " << White << endl;
-        for (size_t i = 0; i < children.size(); i++)
-        {
-            children[i]->print(level + 1);
-        }
-        return;
-    }
-    // virtual llvm::Value *CodeGen();
-};
-
-
-// return stmt
-class ReturnStmt : public BaseAST
-{
-private:
-    /* data */
-public:
-    ReturnStmt() { ; }
-    ~ReturnStmt() { ; }
-    virtual void print(int level)
-    {
-        padding(level);
-        cout << GREEN << "ReturnStmt " << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);

@@ -32,6 +32,7 @@
 #define TYPEINTPTR 5
 #define TYPEFLOATPTR 6
 #define TYPECHARPTR 7
+#define TYPESTRING 8
 #define TYPEINVALID 16
 
 // operands
