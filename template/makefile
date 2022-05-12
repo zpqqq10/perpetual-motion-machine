@@ -1,9 +1,11 @@
 LEX = lex
 YACC = yacc -d
 
-CXX = g++
+CXX = clang++
+# CXX = g++
 INCLUDEDIR = include/
-CXXFLAGS = -Wall -fPIC -I $(INCLUDEDIR)
+CXXFLAGS = -Wall -fPIC -I $(INCLUDEDIR) `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti
+# CXXFLAGS = `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti
 
 OBJS=\
 	src/main.o \
@@ -16,14 +18,14 @@ maggot: $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $@
 src/%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
-src/lex.yy.o: src/lex.yy.c
+src/lex.yy.o: src/lex.yy.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
-src/y.tab.o: src/y.tab.c
+src/y.tab.o: src/y.tab.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
-src/lex.yy.c: src/maggot.l
+src/lex.yy.cpp: src/maggot.l
 	$(LEX) --outfile=$@ $^ 
-src/y.tab.c src/y.tab.h: src/maggot.ypp
-	$(YACC) $^ -v -o src/y.tab.c
+src/y.tab.cpp src/y.tab.h: src/maggot.ypp
+	$(YACC) $^ -v -o src/y.tab.cpp
 
 
 

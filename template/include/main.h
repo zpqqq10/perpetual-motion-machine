@@ -22,10 +22,10 @@ static inline void logImpl(const char *s)
         if (__builtin_expect(option_debug, false))                      \
             debugImpl((msg), ##__VA_ARGS__);                            \
     } while (false)
-#define log(color, msg, ...)                                            \
-    do {                                                                \
-        logImpl(msg, ##__VA_ARGS__);                                    \
-    } while (false)
+// #define log(color, msg, ...)                                            \
+//     do {                                                                \
+//         logImpl(msg, ##__VA_ARGS__);                                    \
+//     } while (false)
 
 
 extern bool option_debug;

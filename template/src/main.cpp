@@ -5,9 +5,9 @@
 #include <cstdarg>
 #include <getopt.h>
 
-#include <main.h>
-#include "../include/utils.h"
-#include "../include/declaration.h"
+#include "main.h"
+#include "utils.h"
+#include "declaration.h"
 
 using namespace std;
 
@@ -73,6 +73,7 @@ int main(int argc, char** argv)
 	yyparse();
 	if(prog){
 		prog->print();
+		// prog->CodeGen();
 	}
 	else {
 		cout << "nothing" << endl;

@@ -3,7 +3,7 @@
 #include "declaration.h"
 #include "expression.h"
 #include "statement.h"
-#include "y.tab.h"
+#include "y.tab.hpp"
 using namespace std;
 // REAL    [-+]?(([0-9]*\.[0-9]+)|([0-9]+\.)|([0-9]+[eE][-+]?[0-9]+))
 // real: 12.02e-2, +12.2, -1e+2
@@ -11,6 +11,7 @@ using namespace std;
 %}
 %option noyywrap
 %option nounput
+%option noinput
 WHITESPACE  [ \t\n]+
 IDENTIFIER  [_a-zA-Z][_a-zA-Z0-9]*
 Digits  ([0-9]+)

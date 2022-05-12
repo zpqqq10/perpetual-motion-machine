@@ -15,8 +15,6 @@ private:
     string name;
     int type;
     int length;    // for pointer
-    int i_initial; // for integer and bool
-    float f_initial;
 
 public:
     VarDeclAST(string n) : name(n)
@@ -99,8 +97,6 @@ private:
     string name;
     int type;
     bool is_pointer; // for pointer
-    int i_initial;   // for integer and bool
-    float f_initial;
 
 public:
     ParmVarDeclAST(string n) : name(n)

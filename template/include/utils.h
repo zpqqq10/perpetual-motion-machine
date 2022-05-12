@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include "llvm/IR/Value.h"
 // type of statements
 #define STMTDEFAULT -1
 #define STMTEXPRESSION 0
@@ -80,6 +81,8 @@ public:
         padding(level);
         std::cout << "BASE" << std::endl;
     }
+
+    virtual llvm::Value *CodeGen(){}
 };
 
 class Program: public BaseAST
@@ -96,6 +99,8 @@ public:
             children[i]->print(0);
         }
     }
+
+    virtual llvm::Value *CodeGen(){}
 };
 
 
