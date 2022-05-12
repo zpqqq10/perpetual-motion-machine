@@ -26,7 +26,7 @@ public:
         return;
     }
 
-    // llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 // selection stmt
@@ -47,7 +47,7 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 // iteration stmt
@@ -68,7 +68,7 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 // return stmt
@@ -89,7 +89,7 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 // comment (may be of no use)

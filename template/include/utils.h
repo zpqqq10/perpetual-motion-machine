@@ -64,8 +64,10 @@
 #define White "\e[0m"
 #define CLEAR "\e[1;1H\e[2J"
 
+// type of reference
 #define REFVAR 0
 #define REFFUNC 1
+
 std::string get_type_name(int type);
 std::string get_op_name(int op);
 std::string get_ref_name(int ref);
@@ -82,7 +84,9 @@ public:
         std::cout << "BASE" << std::endl;
     }
 
-    virtual llvm::Value *CodeGen(){}
+    virtual llvm::Value *CodeGen(){
+        return nullptr;
+    }
 };
 
 class Program: public BaseAST
@@ -100,7 +104,13 @@ public:
         }
     }
 
-    virtual llvm::Value *CodeGen(){}
+    virtual llvm::Value *CodeGen(){
+        // for (size_t i = 0; i < children.size(); i++)
+        // {
+        //     children[i]->CodeGen();
+        // }
+        return nullptr;
+    }
 };
 
 

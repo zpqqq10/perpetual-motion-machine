@@ -1,11 +1,12 @@
 make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/n7utb/perpetual-motion-machine/template'
-g++ -Wall -fPIC -I include/ -c src/main.cpp -o src/main.o
-g++ -Wall -fPIC -I include/ -c src/utils.cpp -o src/utils.o
-yacc -d src/maggot.ypp -v -o src/y.tab.c
-g++ -Wall -fPIC -I include/ -c src/y.tab.c -o src/y.tab.o
-lex --outfile=src/lex.yy.c src/maggot.l 
-g++ -Wall -fPIC -I include/ -c src/lex.yy.c -o src/lex.yy.o
-g++ -Wall -fPIC -I include/ src/main.o src/utils.o src/y.tab.o src/lex.yy.o -o maggot
+clang++-12 -Wall -fPIC -I include/ `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti -c src/main.cpp -o src/main.o
+clang++-12 -Wall -fPIC -I include/ `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti -c src/utils.cpp -o src/utils.o
+yacc -d src/maggot.ypp -v -o src/y.tab.cpp
+clang++-12 -Wall -fPIC -I include/ `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti -c src/y.tab.cpp -o src/y.tab.o
+lex --outfile=src/lex.yy.cpp src/maggot.l 
+clang++-12 -Wall -fPIC -I include/ `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti -c src/lex.yy.cpp -o src/lex.yy.o
+clang++-12 -Wall -fPIC -I include/ `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti -c src/codeGen.cpp -o src/codeGen.o
+clang++-12 -Wall -fPIC -I include/ `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti src/main.o src/utils.o src/y.tab.o src/lex.yy.o src/codeGen.o -o maggot 
 make: Leaving directory '/home/n7utb/perpetual-motion-machine/template'
  

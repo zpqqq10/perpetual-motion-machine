@@ -11,11 +11,12 @@ OBJS=\
 	src/main.o \
 	src/utils.o \
 	src/y.tab.o \
-	src/lex.yy.o
+	src/lex.yy.o \
+	src/codeGen.o
 	
 
 maggot: $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $@
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $@ 
 src/%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 src/lex.yy.o: src/lex.yy.cpp
@@ -30,4 +31,4 @@ src/y.tab.cpp src/y.tab.h: src/maggot.ypp
 
 
 clean:
-	rm -rf $(OBJS) src/y.tab.c src/y.tab.h src/lex.yy.c maggot src/y.output
+	rm -rf $(OBJS) src/y.tab.cpp src/y.tab.hpp src/lex.yy.cpp maggot src/y.output

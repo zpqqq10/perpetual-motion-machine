@@ -20,7 +20,7 @@ public:
         cout << "VOID" << endl;
     }
 
-    // llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 class IntegerAST : public BaseAST
@@ -42,7 +42,7 @@ public:
         return;
     }
 
-    // llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 class FloatAST : public BaseAST
@@ -64,7 +64,7 @@ public:
         return;
     }
 
-    // llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 class BoolAST : public BaseAST
@@ -86,7 +86,7 @@ public:
         return;
     }
 
-    // llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 
@@ -109,7 +109,7 @@ public:
         return;
     }
 
-    // llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 
@@ -132,7 +132,7 @@ public:
         return;
     }
 
-    // llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 // for unary operator
@@ -154,7 +154,7 @@ public:
         return;
     }
 
-    // llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 /*** Variable ***/
@@ -177,7 +177,7 @@ public:
         cout << PURPLE << "DeclRefExpr " << RED << get_ref_name(type) << " " << CYAN << identifier << White  << endl;
     }
 
-    // llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 class ArraySubscriptExpr : public BaseAST
@@ -195,6 +195,8 @@ public:
         }
         return;
     }
+
+    virtual llvm::Value *CodeGen();
 };
 // call expr
 class CallExpr : public BaseAST
@@ -214,7 +216,7 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 
@@ -240,7 +242,7 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    virtual llvm::Value *CodeGen();
 };
 
 #endif

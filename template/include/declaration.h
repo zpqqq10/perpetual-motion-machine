@@ -42,7 +42,8 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+
+    virtual llvm::Value *CodeGen();
 };
 
 // temporary variable declaration list (that is, a line)
@@ -86,7 +87,8 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    
+    virtual llvm::Value *CodeGen();
 };
 
 // param variable declaration
@@ -124,7 +126,8 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    
+    virtual llvm::Value *CodeGen();
 };
 
 // parameter variable declaration
@@ -167,7 +170,8 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    
+    virtual llvm::Value *CodeGen();
 };
 
 // function definition
@@ -177,7 +181,6 @@ private:
     /* data */
     int rettype;
     string funcname;
-    // TODO a member for body
 public:
     FuncAST() { ; }
     FuncAST(int type, string name) : rettype(type), funcname(name) { ; }
@@ -192,7 +195,8 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    
+    virtual llvm::Value *CodeGen();
 };
 
 // function declaration
@@ -216,7 +220,8 @@ public:
         }
         return;
     }
-    // virtual llvm::Value *CodeGen();
+    
+    virtual llvm::Value *CodeGen();
 };
 
 #endif
