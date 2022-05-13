@@ -55,7 +55,7 @@ decl_list: decl_list decl {if($2) prog->children.push_back($2);}
 		 ;
 
 // one declaration of global variables / function / prototype / comment
-decl: var_decl {$$ = $1;}
+decl: var_decl {$$ = $1; dynamic_cast<VarDeclList *>$$->setGlobal(true);}
 	| func_decl {$$ = $1;}
 	| proto_decl {$$ = $1;}
 	| COMMENT {$$ = nullptr;} 
@@ -125,7 +125,7 @@ stmt: expression_stmt {$$ = $1;}
 	| selection_stmt {$$ = $1;} 		
 	| iteration_stmt {$$ = $1;}			
 	| return_stmt {$$ = $1;} 			
-	| var_decl {$$ = $1;}
+	| var_decl {$$ = $1; dynamic_cast<VarDeclList *>$$->setGlobal(false);}
 	| COMMENT {$$ = nullptr;}
 	;
 

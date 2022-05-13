@@ -16,6 +16,7 @@ private:
     string name;
     int type;
     int length;    // for pointer
+    bool isGlobal;
 
 public:
     VarDeclAST(string n) : name(n)
@@ -28,10 +29,13 @@ public:
     {
         type = t;
     }
+    virtual void setGlobal(bool g){
+        isGlobal = g;
+    }
     virtual void print(int level)
     {
         padding(level);
-        cout << _GREEN << "VarDecl " << _CYAN << name << White << " " << get_type_name(type);
+        cout << _GREEN << "VarDecl " << _CYAN << name << _RED << (isGlobal ? " global " : " local ") << White << " " << get_type_name(type);
         if (length > 0)
         {
             cout << "* ";
@@ -60,6 +64,13 @@ public:
         for (size_t i = 0; i < vars.size(); i++)
         {
             vars[i]->settype(t);
+        }
+    }
+    virtual void setGlobal(bool g)
+    {
+        for (size_t i = 0; i < vars.size(); i++)
+        {
+            vars[i]->setGlobal(g);
         }
     }
     void addvar(VarDeclAST *var)

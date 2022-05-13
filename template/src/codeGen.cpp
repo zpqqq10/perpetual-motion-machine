@@ -42,17 +42,18 @@ Function *FuncAST::CodeGen()
     // if (!TheFunction)
     //     ;
 
-    // if (!TheFunction->empty())
-    //     return (Function *)LogErrorV("Function cannot be redefined.");
+    if (!TheFunction->empty())
+        return (Function *)LogErrorV("Function cannot be redefined.");
 
     // Create a new basic block to start insertion into.
-    // BasicBlock *BB = BasicBlock::Create(TheContext, "entry", TheFunction);
-    // Builder.SetInsertPoint(BB);
+    BasicBlock *BB = BasicBlock::Create(TheContext, "entry", TheFunction);
+    Builder.SetInsertPoint(BB);
 
     // Record the function arguments in the NamedValues map.
-    // NamedValues.clear();
-    // for (auto &Arg : TheFunction->args())
-    //     NamedValues[std::string(Arg.getName())] = &Arg;
+    // TODO: 确认下这一步有没有问题
+    NamedValues.clear();
+    for (auto &Arg : TheFunction->args())
+        NamedValues[std::string(Arg.getName())] = &Arg;
 
     // TODO: generate body
     // if (Value *RetVal = children[body]->codegen())
@@ -178,11 +179,11 @@ Value *UnaryOpAST::CodeGen()
 Value *RefAST::CodeGen()
 {
     // Look this variable up in the function.
-    // Value *V = NamedValues[identifier];
-    // if (!V)
-    //     LogErrorV("Unknown variable name");
-    // return V;
-    return nullptr;
+    Value *V = NamedValues[identifier];
+    if (!V)
+        LogErrorV("Unknown variable name");
+    return V;
+    
 }
 
 Value *ArraySubscriptExpr::CodeGen()

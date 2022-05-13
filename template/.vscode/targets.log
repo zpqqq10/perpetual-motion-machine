@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu May 12 22:05:08 2022
+# Make data base, printed on Fri May 13 23:34:37 2022
 
 # Variables
 
@@ -46,22 +46,22 @@ _ = /usr/bin/make
 MAKEFILE_LIST :=  makefile
 # 'override' directive
 GNUMAKEFLAGS := 
-# makefile (from 'makefile', line 9)
+# makefile (from 'makefile', line 7)
 CXXFLAGS = -Wall -fPIC -I $(INCLUDEDIR) `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti
 # environment
 DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1002/bus
 # environment
 VSCODE_VERBOSE_LOGGING = true
-# makefile (from 'makefile', line 12)
+# makefile (from 'makefile', line 10)
 OBJS = src/main.o src/utils.o src/y.tab.o src/lex.yy.o src/codeGen.o
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/n7utb
 # environment
-SSH_CONNECTION = 39.174.145.14 20628 10.0.16.4 22
+SSH_CONNECTION = 39.174.145.14 21380 10.0.16.4 22
 # environment
-PATH = /home/n7utb/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/remote-cli:/home/n7utb/.local/bin:/home/n7utb/.cargo/bin:/usr/local/llvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+PATH = /home/n7utb/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/remote-cli:/home/n7utb/.local/bin:/home/n7utb/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # makefile (from 'makefile', line 2)
 YACC = yacc -d
 # environment
@@ -69,7 +69,7 @@ XDG_RUNTIME_DIR = /run/user/1002
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-51f95e20-bfe9-4694-9770-200071d81ade.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-228e16c9-4ec2-4fa9-ac4b-4c7ee092209b.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -111,7 +111,7 @@ MAKECMDGOALS := all
 # environment
 SHLVL = 1
 # environment
-XDG_SESSION_ID = 27976
+XDG_SESSION_ID = 30280
 # environment
 USER = n7utb
 # makefile
@@ -120,8 +120,6 @@ USER = n7utb
 %D = $(patsubst %/,%,$(dir $%))
 # default
 MAKE_COMMAND := make
-# environment
-OLDPWD = /home/n7utb/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d
 # default
 .VARIABLES := 
 # automatic
@@ -135,7 +133,7 @@ MAKEFLAGS = pqrR
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_CLIENT = 39.174.145.14 20628 22
+SSH_CLIENT = 39.174.145.14 21380 22
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
@@ -149,7 +147,7 @@ PROMPT_COMMAND = history -a;
 # automatic
 <F = $(notdir $<)
 # makefile (from 'makefile', line 4)
-CXX = clang++-12
+CXX = clang++
 # environment
 LC_ALL = C
 # makefile (from 'makefile', line 6)
@@ -169,13 +167,11 @@ MAKE_HOST := x86_64-pc-linux-gnu
 # environment
 LANG = C
 # environment
-LLVM_HOME = /usr/local/llvm/bin
-# environment
 VSCODE_EXTHOST_WILL_SEND_SOCKET = true
 # environment
 MOTD_SHOWN = pam
 # variable set hash-table stats:
-# Load=81/1024=8%, Rehash=0, Collisions=11/107=10%
+# Load=79/1024=8%, Rehash=0, Collisions=11/105=10%
 
 # Pattern-specific Variable Values
 
@@ -183,15 +179,15 @@ MOTD_SHOWN = pam
 
 # Directories
 
-# . (device 64514, inode 1693333): 8 files, no impossibilities.
+# . (device 64514, inode 1693333): 7 files, no impossibilities.
 # src (device 64514, inode 1693341): No files, no impossibilities so far.
 
-# 8 files, no impossibilities in 2 directories.
+# 7 files, no impossibilities in 2 directories.
 
 # Implicit Rules
 
 src/%.o: src/%.cpp
-#  recipe to execute (from 'makefile', line 23):
+#  recipe to execute (from 'makefile', line 21):
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 # 1 implicit rules, 0 (0.0%) terminal.
@@ -202,7 +198,7 @@ maggot: src/main.o src/utils.o src/y.tab.o src/lex.yy.o src/codeGen.o
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 21):
+#  recipe to execute (from 'makefile', line 19):
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $@ 
 
 # Not a target:
@@ -216,7 +212,7 @@ src/lex.yy.cpp: src/maggot.l
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 29):
+#  recipe to execute (from 'makefile', line 27):
 	$(LEX) --outfile=$@ $^ 
 
 # Not a target:
@@ -229,13 +225,13 @@ src/y.tab.o: src/y.tab.cpp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 27):
+#  recipe to execute (from 'makefile', line 25):
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 # Not a target:
 makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-12 21:54:28.175741149
+#  Last modified 2022-05-12 23:48:20.518609094
 #  File has been updated.
 #  Successfully updated.
 
@@ -255,7 +251,7 @@ src/lex.yy.o: src/lex.yy.cpp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 25):
+#  recipe to execute (from 'makefile', line 23):
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 # Not a target:
@@ -280,21 +276,21 @@ clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 36):
+#  recipe to execute (from 'makefile', line 34):
 	rm -rf $(OBJS) src/y.tab.cpp src/y.tab.hpp src/lex.yy.cpp maggot src/y.output
 
 src/y.tab.h: src/maggot.ypp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 31):
+#  recipe to execute (from 'makefile', line 29):
 	$(YACC) $^ -v -o src/y.tab.cpp
 
 src/y.tab.cpp: src/maggot.ypp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 31):
+#  recipe to execute (from 'makefile', line 29):
 	$(YACC) $^ -v -o src/y.tab.cpp
 
 # files hash-table stats:
@@ -309,9 +305,9 @@ src/y.tab.cpp: src/maggot.ypp
 # strcache buffers: 1 (0) / strings = 26 / storage = 256 B / avg = 9 B
 # current buf: size = 8162 B / used = 256 B / count = 26 / avg = 9 B
 
-# strcache performance: lookups = 43 / hit rate = 39%
+# strcache performance: lookups = 42 / hit rate = 38%
 # hash-table stats:
-# Load=26/8192=0%, Rehash=0, Collisions=1/43=2%
-# Finished Make data base on Thu May 12 22:05:08 2022
+# Load=26/8192=0%, Rehash=0, Collisions=1/42=2%
+# Finished Make data base on Fri May 13 23:34:37 2022
 
  

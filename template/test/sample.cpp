@@ -2,7 +2,6 @@
 
 int x[10], test = 0x22, f = 0.25, num = 222 - -233;
 bool flag = false;
-string msg = "test";
 
 int minloc(int a[], int low, int high);
 void sort(int a[], int low, int high);
@@ -50,9 +49,6 @@ int input()
 void output(int x)
 {
 }
-void output(string str)
-{
-}
 int main()
 {
     int i, m, n, a[2], x[10];
@@ -78,7 +74,8 @@ int main()
         i = i + 1;
     {
         output(233);
-        printf("%d %d", x[0], x[1]);
+        int local = 100;
+        printf("%d %d %d", x[0], x[1], local);
     }
     return 0;
 }
