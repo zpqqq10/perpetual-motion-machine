@@ -26,6 +26,20 @@
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
 
+#include "declaration.h"
+#include "expression.h"
+#include "statement.h"
+
 using namespace llvm;
+
+static LLVMContext TheContext;
+static IRBuilder<> Builder(TheContext);
+static std::unique_ptr<Module> TheModule = std::make_unique<Module>("maggot", TheContext);;
+static std::map<std::string, Value *> NamedValues;
+
+/// LogError* - These are little helper functions for error handling.
+std::unique_ptr<BaseAST> LogError(const char *Str);
+
+Value *LogErrorV(const char *Str);
 
 #endif

@@ -8,6 +8,7 @@
 #include "main.h"
 #include "utils.h"
 #include "declaration.h"
+#include "codeGen.h"
 
 using namespace std;
 
@@ -74,6 +75,7 @@ int main(int argc, char** argv)
 	if(prog){
 		prog->print();
 		// prog->CodeGen();
+		TheModule->print(errs(), nullptr);
 	}
 	else {
 		cout << "nothing" << endl;

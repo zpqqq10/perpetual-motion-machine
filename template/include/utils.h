@@ -54,13 +54,13 @@
 #define OPUMINUS 14
 // COLOR
 #define CANCEL "\e[0m"
-#define RED "\e[1;31m"
-#define GREEN "\e[0;32m"
-#define YELLOW "\e[1;33m"
-#define BLUE "\e[1;34m"
-#define PURPLE "\e[1;35m"
-#define CYAN "\e[1;36m"
-#define WHITE "\e[1;37m"
+#define _RED "\e[1;31m"
+#define _GREEN "\e[0;32m"
+#define _YELLOW "\e[1;33m"
+#define _BLUE "\e[1;34m"
+#define _PURPLE "\e[1;35m"
+#define _CYAN "\e[1;36m"
+#define _WHITE "\e[1;37m"
 #define White "\e[0m"
 #define CLEAR "\e[1;1H\e[2J"
 
@@ -78,7 +78,7 @@ class BaseAST
 public:
     std::vector<BaseAST*> children;
     BaseAST(){;}
-    ~BaseAST() {;}
+    virtual ~BaseAST() {;}
     virtual void print(int level){
         padding(level);
         std::cout << "BASE" << std::endl;

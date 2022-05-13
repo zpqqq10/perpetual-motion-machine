@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu May 12 23:49:30 2022
+# Make data base, printed on Fri May 13 13:22:23 2022
 
 # Variables
 
@@ -55,7 +55,7 @@ LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/n7utb
 # environment
-SSH_CONNECTION = 39.174.145.11 36203 10.0.16.4 22
+SSH_CONNECTION = 39.174.145.11 24004 10.0.16.4 22
 # environment
 PATH = /home/n7utb/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/bin/remote-cli:/home/n7utb/.local/bin:/home/n7utb/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # environment
@@ -63,7 +63,7 @@ XDG_RUNTIME_DIR = /run/user/1002
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-e5aa8cd3-fb7b-4fd7-b23e-927908f7c653.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-d7f14423-7dd4-4f8a-8d05-24ace37da813.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -89,7 +89,7 @@ LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
 LOGNAME = n7utb
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # automatic
 +F = $(notdir $+)
 # environment
@@ -105,7 +105,7 @@ MAKECMDGOALS := all
 # environment
 SHLVL = 1
 # environment
-XDG_SESSION_ID = 28491
+XDG_SESSION_ID = 29558
 # environment
 USER = n7utb
 # makefile
@@ -125,7 +125,7 @@ MAKEFLAGS = pqrR
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_CLIENT = 39.174.145.11 36203 22
+SSH_CLIENT = 39.174.145.11 24004 22
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
@@ -225,6 +225,6 @@ GNUmakefile:
 # strcache performance: lookups = 19 / hit rate = 15%
 # hash-table stats:
 # Load=16/8192=0%, Rehash=0, Collisions=1/19=5%
-# Finished Make data base on Thu May 12 23:49:30 2022
+# Finished Make data base on Fri May 13 13:22:23 2022
 
  

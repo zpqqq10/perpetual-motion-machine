@@ -78,7 +78,7 @@ int main()
         i = i + 1;
     {
         output(233);
-        output("test");
+        printf("%d %d", x[0], x[1]);
     }
     return 0;
 }

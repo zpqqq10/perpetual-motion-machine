@@ -18,7 +18,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "CompoundStmt" << White << endl;
+        cout << _PURPLE << "CompoundStmt" << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -40,7 +40,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "IfStmt " << White << endl;
+        cout << _PURPLE << "IfStmt " << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -61,7 +61,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "WhileStmt " << White << endl;
+        cout << _PURPLE << "WhileStmt " << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -82,7 +82,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "ReturnStmt " << White << endl;
+        cout << _PURPLE << "ReturnStmt " << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);

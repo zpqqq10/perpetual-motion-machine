@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "llvm/IR/Function.h"
 #include "utils.h"
 using namespace std;
 
@@ -30,7 +31,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "VarDecl " << CYAN << name << White << " " << get_type_name(type);
+        cout << _GREEN << "VarDecl " << _CYAN << name << White << " " << get_type_name(type);
         if (length > 0)
         {
             cout << "* ";
@@ -80,7 +81,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "DeclStmt " << White << endl;
+        cout << _PURPLE << "DeclStmt " << White << endl;
         for (size_t i = 0; i < vars.size(); i++)
         {
             vars[i]->print(level + 1);
@@ -114,7 +115,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "ParmVarDecl " << CYAN << name << White << " " << get_type_name(type);
+        cout << _GREEN << "ParmVarDecl " << _CYAN << name << White << " " << get_type_name(type);
         if (is_pointer)
         {
             cout << "* ";
@@ -188,7 +189,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "FunctionDecl " << CYAN << funcname << White << " " << get_type_name(rettype) << endl;
+        cout << _GREEN << "FunctionDecl " << _CYAN << funcname << White << " " << get_type_name(rettype) << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -196,7 +197,7 @@ public:
         return;
     }
     
-    virtual llvm::Value *CodeGen();
+    virtual llvm::Function *CodeGen();
 };
 
 // function declaration
@@ -213,7 +214,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << GREEN << "FunctionDecl " << CYAN << funcname << White << " " << get_type_name(rettype) << endl;
+        cout << _GREEN << "FunctionDecl " << _CYAN << funcname << White << " " << get_type_name(rettype) << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -221,7 +222,7 @@ public:
         return;
     }
     
-    virtual llvm::Value *CodeGen();
+    virtual llvm::Function *CodeGen();
 };
 
 #endif

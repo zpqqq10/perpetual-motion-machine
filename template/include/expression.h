@@ -8,7 +8,6 @@
 #include "main.h"
 using namespace std;
 
-
 /*** value ***/
 class VoidAST : public BaseAST
 {
@@ -38,7 +37,8 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "IntegerLiteral " << " " << CYAN << value << White << endl;
+        cout << _PURPLE << "IntegerLiteral "
+             << " " << _CYAN << value << White << endl;
         return;
     }
 
@@ -60,7 +60,8 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "FloatLiteral " << " " << CYAN << value << White << endl;
+        cout << _PURPLE << "FloatLiteral "
+             << " " << _CYAN << value << White << endl;
         return;
     }
 
@@ -82,20 +83,23 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "BoolLiteral " << " " << CYAN << (value ? "true" : "false") << White << endl;
+        cout << _PURPLE << "BoolLiteral "
+             << " " << _CYAN << (value ? "true" : "false") << White << endl;
         return;
     }
 
     virtual llvm::Value *CodeGen();
 };
 
-
 class StringAST : public BaseAST
 {
     string value;
 
 public:
-    StringAST(string v): value(v) {}
+    StringAST(string v)
+    {
+        value = v.substr(1, v.length() - 2);
+    }
 
     string &getValue()
     {
@@ -105,13 +109,13 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "StringLiteral " << " " << CYAN << value << White << endl;
+        cout << _PURPLE << "StringLiteral "
+             << " " << _CYAN << value << White << endl;
         return;
     }
 
     virtual llvm::Value *CodeGen();
 };
-
 
 // for binary operator
 class BinaryOpAST : public BaseAST
@@ -124,7 +128,8 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "BinaryOperator " << " " << CYAN << get_op_name(type) << White << endl;
+        cout << _PURPLE << "BinaryOperator "
+             << " " << _CYAN << get_op_name(type) << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -146,7 +151,8 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "UnaryOperator " << " " << CYAN << get_op_name(type) << White << endl;
+        cout << _PURPLE << "UnaryOperator "
+             << " " << _CYAN << get_op_name(type) << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -164,7 +170,7 @@ class RefAST : public BaseAST
     int type;
 
 public:
-    RefAST(string id, int type) : identifier(id),type(type) {}
+    RefAST(string id, int type) : identifier(id), type(type) {}
 
     string &getId()
     {
@@ -174,7 +180,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "DeclRefExpr " << RED << get_ref_name(type) << " " << CYAN << identifier << White  << endl;
+        cout << _PURPLE << "DeclRefExpr " << _RED << get_ref_name(type) << " " << _CYAN << identifier << White << endl;
     }
 
     virtual llvm::Value *CodeGen();
@@ -183,12 +189,12 @@ public:
 class ArraySubscriptExpr : public BaseAST
 {
 public:
-    ArraySubscriptExpr(){;}
-    ~ArraySubscriptExpr(){;}
+    ArraySubscriptExpr() { ; }
+    ~ArraySubscriptExpr() { ; }
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "ArraySubscriptExpr" << White << endl;
+        cout << _PURPLE << "ArraySubscriptExpr" << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -209,7 +215,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << PURPLE << "CallExpr " << White << endl;
+        cout << _PURPLE << "CallExpr " << White << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
             children[i]->print(level + 1);
@@ -218,8 +224,6 @@ public:
     }
     virtual llvm::Value *CodeGen();
 };
-
-
 
 // args expr
 class ArgsList : public BaseAST
