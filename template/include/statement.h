@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <memory>
+#include "llvm/IR/Value.h"
 #include "utils.h"
 
 using namespace std;
@@ -14,7 +15,7 @@ class CompoundStmtAST : public BaseAST
 
 public:
     CompoundStmtAST() {}
-
+    vector<pair<string, llvm::Value*>> OldBindings;
     virtual void print(int level)
     {
         padding(level);

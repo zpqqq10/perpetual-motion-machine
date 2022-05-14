@@ -1,6 +1,7 @@
 {
     "makefile.extensionOutputFolder": "./.vscode",
     "files.associations": {
+        "*.sage": "python",
         "array": "cpp",
         "*.tcc": "cpp",
         "bitset": "cpp",
@@ -31,6 +32,8 @@
         "system_error": "cpp",
         "thread": "cpp",
         "type_traits": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
     }
 }

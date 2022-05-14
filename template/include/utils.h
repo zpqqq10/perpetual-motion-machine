@@ -36,6 +36,7 @@
 #define TYPESTRING 8
 #define TYPEINVALID 16
 
+#define TYPEPTR 4
 // operands
 #define OPADD 0 // arithmetic
 #define OPSUB 1
@@ -104,13 +105,7 @@ public:
         }
     }
 
-    virtual llvm::Value *CodeGen(){
-        // for (size_t i = 0; i < children.size(); i++)
-        // {
-        //     children[i]->CodeGen();
-        // }
-        return nullptr;
-    }
+    virtual llvm::Value *CodeGen();
 };
 
 

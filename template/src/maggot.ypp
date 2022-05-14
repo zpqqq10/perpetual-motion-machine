@@ -100,7 +100,7 @@ param_list: param_list COMMA param {$$ = $1;dynamic_cast<ParmVarDeclList *>$$->a
 		  ;
 
 param: type_specifier IDENTIFIER {$$ = new ParmVarDeclAST(*$2); dynamic_cast<ParmVarDeclAST *>$$->settype($1);} 
-	 | type_specifier IDENTIFIER LEFTSB RIGHTSB {$$ = new ParmVarDeclAST(*$2, true); dynamic_cast<ParmVarDeclAST *>$$->settype($1);} 
+	 | type_specifier IDENTIFIER LEFTSB RIGHTSB {$$ = new ParmVarDeclAST(*$2); dynamic_cast<ParmVarDeclAST *>$$->settype($1 + TYPEPTR);} 
 	 ;
 
 // begin with { and end with }

@@ -69,13 +69,11 @@ int main(int argc, char** argv)
 				return 0;
 		}
 	}
-	if(option_debug)
-		debug("test");
 	yyparse();
 	if(prog){
 		prog->print();
-		// prog->CodeGen();
-		TheModule->print(errs(), nullptr);
+		prog->CodeGen();
+		
 	}
 	else {
 		cout << "nothing" << endl;

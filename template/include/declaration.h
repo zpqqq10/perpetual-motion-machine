@@ -13,12 +13,12 @@ class VarDeclAST : public BaseAST
 {
 private:
     /* data */
-    string name;
+    
+public:
+    bool isGlobal;
     int type;
     int length;    // for pointer
-    bool isGlobal;
-
-public:
+    string name;
     VarDeclAST(string n) : name(n)
     {
         length = -1;
@@ -28,6 +28,10 @@ public:
     virtual void settype(int t)
     {
         type = t;
+        if(length!=-1)
+        {
+            type += TYPEPTR;
+        }
     }
     virtual void setGlobal(bool g){
         isGlobal = g;
@@ -36,10 +40,7 @@ public:
     {
         padding(level);
         cout << _GREEN << "VarDecl " << _CYAN << name << _RED << (isGlobal ? " global " : " local ") << White << " " << get_type_name(type);
-        if (length > 0)
-        {
-            cout << "* ";
-        }
+
         cout << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
@@ -108,16 +109,15 @@ class ParmVarDeclAST : public BaseAST
 {
 private:
     /* data */
-    string name;
-    int type;
-    bool is_pointer; // for pointer
+    
+
+
 
 public:
-    ParmVarDeclAST(string n) : name(n)
-    {
-        is_pointer = false;
-    }
-    ParmVarDeclAST(string n, bool flag) : name(n), is_pointer(flag) { ; }
+    int type;
+    string name;
+    ParmVarDeclAST(string n) : name(n){}
+
     ~ParmVarDeclAST() { ; }
     virtual void settype(int t)
     {
@@ -127,10 +127,7 @@ public:
     {
         padding(level);
         cout << _GREEN << "ParmVarDecl " << _CYAN << name << White << " " << get_type_name(type);
-        if (is_pointer)
-        {
-            cout << "* ";
-        }
+
         cout << endl;
         for (size_t i = 0; i < children.size(); i++)
         {
