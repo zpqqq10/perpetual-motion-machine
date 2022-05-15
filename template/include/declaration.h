@@ -30,7 +30,7 @@ public:
         type = t;
         if (length != -1)
         {
-            type += TYPEPTR;
+            type += TYPEARRAY;
         }
     }
     virtual void setGlobal(bool g)

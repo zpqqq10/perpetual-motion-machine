@@ -94,13 +94,14 @@ proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {BaseAST* f 
 params: param_list {$$ = $1;} 
 	  | VOID {$$ = new ParmVarDeclList(true);} 
 	  | {$$ = new ParmVarDeclList(true);} 
+	  ;
 
 param_list: param_list COMMA param {$$ = $1;dynamic_cast<ParmVarDeclList *>$$->addvar(dynamic_cast<ParmVarDeclAST *>$3);}
 		  | param {$$ = new ParmVarDeclList();dynamic_cast<ParmVarDeclList *>$$->addvar(dynamic_cast<ParmVarDeclAST *>$1);} 
 		  ;
 
 param: type_specifier IDENTIFIER {$$ = new ParmVarDeclAST(*$2); dynamic_cast<ParmVarDeclAST *>$$->settype($1);} 
-	 | type_specifier IDENTIFIER LEFTSB RIGHTSB {$$ = new ParmVarDeclAST(*$2); dynamic_cast<ParmVarDeclAST *>$$->settype($1 + TYPEPTR);} 
+	 | type_specifier IDENTIFIER LEFTSB RIGHTSB {$$ = new ParmVarDeclAST(*$2); dynamic_cast<ParmVarDeclAST *>$$->settype($1 + TYPEARRAY);} 
 	 ;
 
 // begin with { and end with }

@@ -42,11 +42,11 @@ Type *TypeGen(int type)
     {
     case TYPEINT:
         return Type::getInt32Ty(TheContext);
-    case TYPEINTPTR:
+    case TYPEINTARRAY:
         return Type::getInt32Ty(TheContext);
     case TYPEFLOAT:
         return Type::getFloatTy(TheContext);
-    case TYPEFLOATPTR:
+    case TYPEFLOATARRAY:
         return Type::getFloatTy(TheContext);
     case TYPEBOOL:
         return Type::getInt1Ty(TheContext);
@@ -63,9 +63,9 @@ ArrayType *TypeGen(int type, int size)
 {
     switch (type)
     {
-    case TYPEINTPTR:
+    case TYPEINTARRAY:
         return ArrayType::get(TypeGen(type), size);
-    case TYPEFLOATPTR:
+    case TYPEFLOATARRAY:
         return ArrayType::get(TypeGen(type), size);
     default:
         return ArrayType::get(TypeGen(TYPEINT), size);
@@ -76,11 +76,11 @@ Value *getInitialValue(int type)
 {
     switch (type)
     {
-    case TYPEINTPTR:
+    case TYPEINTARRAY:
         return ConstantAggregateZero::get(TypeGen(TYPEINT));
     case TYPEFLOAT:
         return ConstantFP::get(TheContext, APFloat(0.0));
-    case TYPEFLOATPTR:
+    case TYPEFLOATARRAY:
         return ConstantAggregateZero::get(TypeGen(TYPEFLOAT));
     case TYPEBOOL:
         return ConstantInt::get(TheContext, APInt(1, 0, false));
@@ -128,13 +128,14 @@ Value *VarDeclList::CodeGen()
     }
     else
     {
-        debug("local variable");
+
         CompoundStmtAST *current = compoundstack.back();
         Function *TheFunction = Builder.GetInsertBlock()->getParent();
         for (int i = 0; i < vars.size(); i++)
         {
             VarDeclAST *var = vars[i];
             Value *InitVal;
+
             if (var->children.size())
             {
                 InitVal = var->children[0]->CodeGen();
@@ -183,14 +184,14 @@ Function *FuncAST::CodeGen()
 
     for (auto &Arg : TheFunction->args())
     {
-        debug("Begin args");
+
         NamedValues[std::string(Arg.getName())] = &Arg;
         AllocaInst *alloca = CreateEntryBlockAlloca(TheFunction, Arg.getName(), Arg.getType());
         Builder.CreateStore(&Arg, alloca);
     }
 
     children[1]->CodeGen();
-    debug("Function Done");
+
     // Finish off the function.
     Builder.CreateRet(getInitialValue(rettype));
     // Validate the generated code, checking for consistency.
@@ -260,28 +261,39 @@ Value *StringAST::CodeGen()
 
 Value *BinaryOpAST::CodeGen()
 {
-    // TODO operator type check
     // flag indicating whether the return type is float
     bool fflag = false;
+    if (type == OPASSIGN)
+    {
+        if (!dynamic_cast<RefAST *>(children[0]) && !dynamic_cast<ArraySubscriptExpr *>(children[0]))
+            return LogErrorV("Destination of assignment must be assignable!");
+        if(dynamic_cast<ArraySubscriptExpr *>(children[0]))
+        {
+            dynamic_cast<ArraySubscriptExpr *>(children[0])->isStore = true;
+        }
+        if(dynamic_cast<RefAST *>(children[0]))
+        {
+            dynamic_cast<RefAST *>(children[0])->isStore = true;
+        }
+    }
+
     Value *L = children[0]->CodeGen();
     Value *R = children[1]->CodeGen();
     if (!L || !R)
-        return nullptr;
+        return LogErrorV("Expression Error!");
 
-    if ((L->getType()->isFloatTy() || L->getType()->isIntegerTy()) &&
-        (R->getType()->isFloatTy() || R->getType()->isIntegerTy()))
+    if (((L->getType()->isFloatTy() || L->getType()->isIntegerTy()) && (R->getType()->isFloatTy() || R->getType()->isIntegerTy())) || (L->getType()->isPointerTy() && type == OPASSIGN))
     {
         // can be compared of computed;
-        if (L->getType()->isFloatTy() || R->getType()->isFloatTy() || type == OPDIV)
+        if (type == OPDIV)
         {
-            fflag = true;
+            // fflag = true;
         }
         // if return float, make some necessary conversion
         if (fflag)
         {
             L = Builder.CreateUIToFP(L, TypeGen(TYPEFLOAT));
             R = Builder.CreateUIToFP(R, TypeGen(TYPEFLOAT));
-            Builder.CreateIc
         }
         switch (type)
         {
@@ -321,8 +333,10 @@ Value *BinaryOpAST::CodeGen()
             return fflag
                        ? Builder.CreateFCmpONE(L, R, "cmpftmp")
                        : Builder.CreateICmpNE(L, R, "cmptmp");
-        case OPASSIGN: 
-            ;
+        case OPASSIGN:
+            // TODO 使用store更新值
+            return Builder.CreateStore(R, L);
+
         default:
             return LogErrorV("invalid binary operator");
             // case OPAND:
@@ -340,7 +354,8 @@ Value *BinaryOpAST::CodeGen()
 
 Value *UnaryOpAST::CodeGen()
 {
-    return nullptr;
+    return Builder.CreateNeg(children[0]->CodeGen());
+    // return nullptr;
 }
 
 Value *RefAST::CodeGen()
@@ -353,19 +368,41 @@ Value *RefAST::CodeGen()
         if (!gVar)
             return LogErrorV("undefined variable");
         else
-            return Builder.CreateLoad(gVar->getType()->getPointerElementType(), gVar, identifier.c_str());
+        {
+            if (gVar->getType()->getPointerElementType()->isArrayTy() || isStore)
+            {
+                return gVar;
+            }
+            else
+                return Builder.CreateLoad(gVar->getType()->getPointerElementType(), gVar, identifier.c_str());
+        }
     }
     Value *addr = V;
 
-    if (V->getType()->isArrayTy())
+    if (V->getType()->getPointerElementType()->isArrayTy() || isStore)
     {
+        addr = V;
     }
-    return V;
+    else
+    {
+        addr = Builder.CreateLoad(V->getType()->getPointerElementType(), V, identifier.c_str());
+    }
+
+    return addr;
 }
 
 Value *ArraySubscriptExpr::CodeGen()
 {
-    return nullptr;
+    Value *arrVal = children[0]->CodeGen();
+    std::vector<Value *> indices;
+    Value *index = children[1]->CodeGen();
+    indices.push_back(index);
+    Value *elePtr = Builder.CreateInBoundsGEP(arrVal, indices);
+    if(isStore)
+        return elePtr;
+    else
+        return Builder.CreateLoad(arrVal->getType()->getPointerElementType()->getArrayElementType(),elePtr);
+    
 }
 
 Value *CallExpr::CodeGen()
@@ -400,11 +437,11 @@ Value *ArgsList::CodeGen()
 /************************ statements ************************/
 Value *CompoundStmtAST::CodeGen()
 {
-    debug("Begin Compound");
     // Value *ret = nullptr;
     compoundstack.push_back(this);
     for (size_t i = 0; i < children.size(); i++)
     {
+
         children[i]->CodeGen();
     }
     for (auto &p : OldBindings)

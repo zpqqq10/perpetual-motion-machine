@@ -166,10 +166,12 @@ public:
 /*** Variable ***/
 class RefAST : public BaseAST
 {
-    string identifier;
-    int type;
+
 
 public:
+    bool isStore;
+    string identifier;
+    int type;
     RefAST(string id, int type) : identifier(id), type(type) {}
 
     string &getId()
@@ -189,6 +191,7 @@ public:
 class ArraySubscriptExpr : public BaseAST
 {
 public:
+    bool isStore;
     ArraySubscriptExpr() { ; }
     ~ArraySubscriptExpr() { ; }
     virtual void print(int level)

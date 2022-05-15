@@ -30,13 +30,13 @@
 #define TYPEFLOAT 2
 #define TYPECHAR 3
 #define TYPEBOOL 4
-#define TYPEINTPTR 5
-#define TYPEFLOATPTR 6
+#define TYPEINTARRAY 5
+#define TYPEFLOATARRAY 6
 #define TYPECHARPTR 7
 #define TYPESTRING 8
 #define TYPEINVALID 16
 
-#define TYPEPTR 4
+#define TYPEARRAY 4
 // operands
 #define OPADD 0 // arithmetic
 #define OPSUB 1

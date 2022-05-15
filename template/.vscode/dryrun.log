@@ -1,6 +1,7 @@
 make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/n7utb/perpetual-motion-machine/template'
 clang++ -Wall -fPIC -I include/ `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti -c src/main.cpp -o src/main.o
+ 
 clang++ -Wall -fPIC -I include/ `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti -c src/utils.cpp -o src/utils.o
 yacc -d src/maggot.ypp -v -o src/y.tab.cpp
 clang++ -Wall -fPIC -I include/ `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti -c src/y.tab.cpp -o src/y.tab.o

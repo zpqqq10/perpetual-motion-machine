@@ -14,9 +14,9 @@ std::string get_type_name(int type)
 		return "char";
 	case TYPEBOOL:
 		return "bool";
-	case TYPEINTPTR:
+	case TYPEINTARRAY:
 		return "int *";
-	case TYPEFLOATPTR:
+	case TYPEFLOATARRAY:
 		return "float *";
 	case TYPECHARPTR:
 		return "char *";
