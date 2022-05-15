@@ -1,5 +1,21 @@
 #include "codeGen.h"
 
+Value *Program::CodeGen()
+{
+    TheModule->setTargetTriple("x86_64-pc-linux-gnu");
+    TheModule->setDataLayout("e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128");
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        children[i]->CodeGen();
+    }
+    // std::cout << TheModule->getDataLayoutStr() << std::endl;
+    // std::cout << TheModule->getTargetTriple() << std::endl;
+    TheModule->print(errs(), nullptr);
+    return nullptr;
+}
+
+/************************ tools ************************/
+
 std::unique_ptr<BaseAST> LogError(const char *Str)
 {
     fprintf(stderr, "Error: %s\n", Str);
@@ -12,9 +28,7 @@ Value *LogErrorV(const char *Str)
     return nullptr;
 }
 
-static AllocaInst *CreateEntryBlockAlloca(Function *TheFunction,
-                                          StringRef VarName,
-                                          Type *type)
+static AllocaInst *CreateEntryBlockAlloca(Function *TheFunction, StringRef VarName, Type *type)
 {
     IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
                      TheFunction->getEntryBlock().begin());
@@ -31,7 +45,7 @@ Type *TypeGen(int type)
     case TYPEINTPTR:
         return Type::getInt32Ty(TheContext);
     case TYPEFLOAT:
-        return Type::getDoubleTy(TheContext);
+        return Type::getFloatTy(TheContext);
     case TYPEFLOATPTR:
         return Type::getFloatTy(TheContext);
     case TYPEBOOL:
@@ -53,6 +67,8 @@ ArrayType *TypeGen(int type, int size)
         return ArrayType::get(TypeGen(type), size);
     case TYPEFLOATPTR:
         return ArrayType::get(TypeGen(type), size);
+    default:
+        return ArrayType::get(TypeGen(TYPEINT), size);
     }
 }
 
@@ -61,7 +77,7 @@ Value *getInitialValue(int type)
     switch (type)
     {
     case TYPEINTPTR:
-        return  ConstantAggregateZero::get(TypeGen(TYPEINT));
+        return ConstantAggregateZero::get(TypeGen(TYPEINT));
     case TYPEFLOAT:
         return ConstantFP::get(TheContext, APFloat(0.0));
     case TYPEFLOATPTR:
@@ -79,15 +95,6 @@ Value *getInitialValue(int type)
 }
 
 /************************ declaration ************************/
-Value *Program::CodeGen()
-{
-    for (size_t i = 0; i < children.size(); i++)
-    {
-        children[i]->CodeGen();
-    }
-    TheModule->print(errs(), nullptr);
-    return nullptr;
-}
 
 Value *VarDeclAST::CodeGen()
 {
@@ -96,7 +103,7 @@ Value *VarDeclAST::CodeGen()
 
 Value *VarDeclList::CodeGen()
 {
-    if (dynamic_cast<VarDeclAST *>(vars[0])->isGlobal)
+    if (isGlobal)
     {
         for (int i = 0; i < vars.size(); i++)
         {
@@ -113,7 +120,7 @@ Value *VarDeclList::CodeGen()
                 InitVal = getInitialValue(var->type);
             }
             // maintain global variable
-            TheModule->getOrInsertGlobal(var->name,var->length == -1 ? TypeGen(var->type) : TypeGen(var->type,var->length));
+            TheModule->getOrInsertGlobal(var->name, var->length == -1 ? TypeGen(var->type) : TypeGen(var->type, var->length));
             GlobalVariable *gVar = TheModule->getNamedGlobal(var->name);
             // gVar->setAlignment(MaybeAlign(4));
             gVar->setInitializer(static_cast<Constant *>(InitVal));
@@ -136,7 +143,7 @@ Value *VarDeclList::CodeGen()
             {
                 InitVal = getInitialValue(var->type);
             }
-            AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, var->name, var->length == -1 ? TypeGen(var->type) : TypeGen(var->type,var->length));
+            AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, var->name, var->length == -1 ? TypeGen(var->type) : TypeGen(var->type, var->length));
             Builder.CreateStore(InitVal, Alloca);
             current->OldBindings.push_back(make_pair(var->name, NamedValues[var->name]));
             NamedValues[var->name] = Alloca;
@@ -248,58 +255,86 @@ Value *BoolAST::CodeGen()
 
 Value *StringAST::CodeGen()
 {
-    Value *x;
     return nullptr;
 }
 
 Value *BinaryOpAST::CodeGen()
 {
     // TODO operator type check
-    // Value *L = children[0]->CodeGen();
-    // Value *R = children[1]->CodeGen();
-    // if (!L || !R)
-    //     return nullptr;
+    // flag indicating whether the return type is float
+    bool fflag = false;
+    Value *L = children[0]->CodeGen();
+    Value *R = children[1]->CodeGen();
+    if (!L || !R)
+        return nullptr;
 
-    // switch (type)
-    // {
-    // case OPASSIGN: // =
-    //     return Builder.createFcmp();
-    // case OPADD: // +
-    //     return Builder.CreateFAdd(L, R, "addtmp");
-    // case OPSUB: // -
-    //     return Builder.CreateFSub(L, R, "subtmp");
-    // case OPMUL: // *
-    //     return Builder.CreateFMul(L, R, "multmp");
-    // case OPDIV: // /
-    //     return Builder.CreateFDiv(L, R, "divtmp");
-    // case OPLE: // <=
-    //     L = Builder.CreateFCmpULT(L, R, "cmptmp");
-    //     // Convert bool 0/1 to double 0.0 or 1.0
-    //     return nullptr;
-    // case OPLT: // <
-    //     L = Builder.CreateFCmpULT(L, R, "cmptmp");
-    //     // Convert bool 0/1 to double 0.0 or 1.0
-    //     return Builder.CreateUIToFP(L, Type::getDoubleTy(TheContext),
-    //                                 "booltmp");
-    // case OPGT: // >
-    //     L = Builder.CreateFCmpULT(L, R, "cmptmp");
-    //     // Convert bool 0/1 to double 0.0 or 1.0
-    //     return nullptr;
-    // case OPGE: // >=
-    //     L = Builder.CreateFCmpULT(L, R, "cmptmp");
-    //     // Convert bool 0/1 to double 0.0 or 1.0
-    //     return nullptr;
-    // case OPEQ: // ==
-    //     L = Builder.CreateFCmpULT(L, R, "cmptmp");
-    //     // Convert bool 0/1 to double 0.0 or 1.0
-    //     return nullptr;
-    // case OPNEQ: // !=
-    //     L = Builder.CreateFCmpULT(L, R, "cmptmp");
-    //     // Convert bool 0/1 to double 0.0 or 1.0
-    //     return nullptr;
-    // default:
-    //     return LogErrorV("invalid binary operator");
-    // }
+    if ((L->getType()->isFloatTy() || L->getType()->isIntegerTy()) &&
+        (R->getType()->isFloatTy() || R->getType()->isIntegerTy()))
+    {
+        // can be compared of computed;
+        if (L->getType()->isFloatTy() || R->getType()->isFloatTy() || type == OPDIV)
+        {
+            fflag = true;
+        }
+        // if return float, make some necessary conversion
+        if (fflag)
+        {
+            L = Builder.CreateUIToFP(L, TypeGen(TYPEFLOAT));
+            R = Builder.CreateUIToFP(R, TypeGen(TYPEFLOAT));
+            Builder.CreateIc
+        }
+        switch (type)
+        {
+        case OPADD:
+            return fflag
+                       ? Builder.CreateFAdd(L, R, "addftmp")
+                       : Builder.CreateAdd(L, R, "addtmp");
+        case OPSUB:
+            return fflag
+                       ? Builder.CreateFSub(L, R, "subftmp")
+                       : Builder.CreateSub(L, R, "subtmp");
+        case OPMUL:
+            return Builder.CreateMul(L, R, "multmp");
+        case OPDIV:
+            return Builder.CreateFDiv(L, R, "divftmp");
+        case OPLT:
+            return fflag
+                       ? Builder.CreateFCmpOLT(L, R, "cmpftmp")
+                       : Builder.CreateICmpSLT(L, R, "cmplt");
+        case OPGT:
+            return fflag
+                       ? Builder.CreateFCmpOGT(L, R, "cmpftmp")
+                       : Builder.CreateICmpSGT(L, R, "cmptmp");
+        case OPLE:
+            return fflag
+                       ? Builder.CreateFCmpOLE(L, R, "cmpftmp")
+                       : Builder.CreateICmpSLE(L, R, "cmptmp");
+        case OPGE:
+            return fflag
+                       ? Builder.CreateFCmpOGE(L, R, "cmpftmp")
+                       : Builder.CreateICmpSGE(L, R, "cmptmp");
+        case OPEQ:
+            return fflag
+                       ? Builder.CreateFCmpOEQ(L, R, "cmpftmp")
+                       : Builder.CreateICmpEQ(L, R, "cmptmp");
+        case OPNEQ:
+            return fflag
+                       ? Builder.CreateFCmpONE(L, R, "cmpftmp")
+                       : Builder.CreateICmpNE(L, R, "cmptmp");
+        case OPASSIGN: 
+            ;
+        default:
+            return LogErrorV("invalid binary operator");
+            // case OPAND:
+            //     return Builder.CreateAnd(L, R, "andtmp");
+            // case OPOR:
+            //     return Builder.CreateOr(L, R, "ortmp");
+        }
+    }
+    else
+    {
+        return LogErrorV("Type cannot be operated");
+    }
     return nullptr;
 }
 
@@ -313,7 +348,18 @@ Value *RefAST::CodeGen()
     // Look this variable up in the function.
     Value *V = NamedValues[identifier];
     if (!V)
-        LogErrorV("Unknown variable name");
+    {
+        GlobalVariable *gVar = TheModule->getNamedGlobal(identifier);
+        if (!gVar)
+            return LogErrorV("undefined variable");
+        else
+            return Builder.CreateLoad(gVar->getType()->getPointerElementType(), gVar, identifier.c_str());
+    }
+    Value *addr = V;
+
+    if (V->getType()->isArrayTy())
+    {
+    }
     return V;
 }
 
@@ -381,7 +427,6 @@ Value *IterationStmtAST::CodeGen()
 
 Value *ReturnStmtAST::CodeGen()
 {
-    debug("xsxssxsxsxs");
     Value *ret = ConstantInt::get(TheContext, APInt(32, 1234, true));
     Builder.CreateRet(ret);
     return nullptr;

@@ -13,12 +13,12 @@ class VarDeclAST : public BaseAST
 {
 private:
     /* data */
-    
+
 public:
     bool isGlobal;
     int type;
-    int length;    // for pointer
     string name;
+    int length; // for pointer
     VarDeclAST(string n) : name(n)
     {
         length = -1;
@@ -28,12 +28,13 @@ public:
     virtual void settype(int t)
     {
         type = t;
-        if(length!=-1)
+        if (length != -1)
         {
             type += TYPEPTR;
         }
     }
-    virtual void setGlobal(bool g){
+    virtual void setGlobal(bool g)
+    {
         isGlobal = g;
     }
     virtual void print(int level)
@@ -57,6 +58,7 @@ class VarDeclList : public BaseAST
 {
 private:
 public:
+    bool isGlobal;
     vector<VarDeclAST *> vars;
     VarDeclList(/* args */) { ; }
     ~VarDeclList() { ; }
@@ -69,6 +71,7 @@ public:
     }
     virtual void setGlobal(bool g)
     {
+        isGlobal = g;
         for (size_t i = 0; i < vars.size(); i++)
         {
             vars[i]->setGlobal(g);
@@ -100,7 +103,7 @@ public:
         }
         return;
     }
-    
+
     virtual llvm::Value *CodeGen();
 };
 
@@ -109,14 +112,11 @@ class ParmVarDeclAST : public BaseAST
 {
 private:
     /* data */
-    
-
-
 
 public:
     int type;
     string name;
-    ParmVarDeclAST(string n) : name(n){}
+    ParmVarDeclAST(string n) : name(n) {}
 
     ~ParmVarDeclAST() { ; }
     virtual void settype(int t)
@@ -135,7 +135,7 @@ public:
         }
         return;
     }
-    
+
     virtual llvm::Value *CodeGen();
 };
 
@@ -179,7 +179,7 @@ public:
         }
         return;
     }
-    
+
     virtual llvm::Value *CodeGen();
 };
 
@@ -190,6 +190,7 @@ private:
     /* data */
     int rettype;
     string funcname;
+
 public:
     FuncAST() { ; }
     FuncAST(int type, string name) : rettype(type), funcname(name) { ; }
@@ -204,7 +205,7 @@ public:
         }
         return;
     }
-    
+
     virtual llvm::Function *CodeGen();
 };
 
@@ -229,7 +230,7 @@ public:
         }
         return;
     }
-    
+
     virtual llvm::Function *CodeGen();
 };
 

@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri May 13 23:34:37 2022
+# Make data base, printed on Sun May 15 12:04:37 2022
 
 # Variables
 
@@ -59,7 +59,7 @@ LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/n7utb
 # environment
-SSH_CONNECTION = 39.174.145.14 21380 10.0.16.4 22
+SSH_CONNECTION = 39.174.145.23 44872 10.0.16.4 22
 # environment
 PATH = /home/n7utb/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/remote-cli:/home/n7utb/.local/bin:/home/n7utb/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # makefile (from 'makefile', line 2)
@@ -69,7 +69,7 @@ XDG_RUNTIME_DIR = /run/user/1002
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-228e16c9-4ec2-4fa9-ac4b-4c7ee092209b.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-6632c363-3e9c-4705-b77c-e7e04577f32f.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -111,7 +111,7 @@ MAKECMDGOALS := all
 # environment
 SHLVL = 1
 # environment
-XDG_SESSION_ID = 30280
+XDG_SESSION_ID = 15
 # environment
 USER = n7utb
 # makefile
@@ -133,7 +133,7 @@ MAKEFLAGS = pqrR
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_CLIENT = 39.174.145.14 21380 22
+SSH_CLIENT = 39.174.145.23 44872 22
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
@@ -179,10 +179,10 @@ MOTD_SHOWN = pam
 
 # Directories
 
-# . (device 64514, inode 1693333): 7 files, no impossibilities.
+# . (device 64514, inode 1693333): 8 files, no impossibilities.
 # src (device 64514, inode 1693341): No files, no impossibilities so far.
 
-# 7 files, no impossibilities in 2 directories.
+# 8 files, no impossibilities in 2 directories.
 
 # Implicit Rules
 
@@ -294,9 +294,9 @@ src/y.tab.cpp: src/maggot.ypp
 	$(YACC) $^ -v -o src/y.tab.cpp
 
 # files hash-table stats:
- 
 # Load=16/1024=2%, Rehash=0, Collisions=0/39=0%
 # VPATH Search Paths
+ 
 
 # No 'vpath' search paths.
 
@@ -305,9 +305,9 @@ src/y.tab.cpp: src/maggot.ypp
 # strcache buffers: 1 (0) / strings = 26 / storage = 256 B / avg = 9 B
 # current buf: size = 8162 B / used = 256 B / count = 26 / avg = 9 B
 
-# strcache performance: lookups = 42 / hit rate = 38%
+# strcache performance: lookups = 43 / hit rate = 39%
 # hash-table stats:
-# Load=26/8192=0%, Rehash=0, Collisions=1/42=2%
-# Finished Make data base on Fri May 13 23:34:37 2022
+# Load=26/8192=0%, Rehash=0, Collisions=1/43=2%
+# Finished Make data base on Sun May 15 12:04:37 2022
 
  
