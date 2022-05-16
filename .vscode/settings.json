@@ -34,6 +34,23 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "tuple": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "bit": "cpp",
+        "cmath": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "cstring": "cpp",
+        "vector": "cpp",
+        "functional": "cpp",
+        "initializer_list": "cpp",
+        "iostream": "cpp",
+        "limits": "cpp",
+        "memory": "cpp",
+        "new": "cpp",
+        "numeric": "cpp",
+        "string": "cpp",
+        "string_view": "cpp"
     }
 }

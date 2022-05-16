@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**", 
-                "/usr/local/llvm/include"
+                "/usr/lib/llvm-10/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

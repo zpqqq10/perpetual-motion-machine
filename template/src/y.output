@@ -1,0 +1,1745 @@
+Terminals unused in grammar
+
+    COLON
+    DQUOTE
+    SQUOTE
+    FOR
+    IN
+    TO
+    BREAK
+    AND
+    OR
+    XOR
+
+
+State 121 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: decl_list
+
+    2 decl_list: decl_list decl
+    3          | decl
+
+    4 decl: var_decl
+    5     | func_decl
+    6     | proto_decl
+    7     | COMMENT
+
+    8 var_decl: type_specifier vars SEMICOLON
+
+    9 vars: vars COMMA var
+   10     | var
+
+   11 var: IDENTIFIER
+   12    | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB
+   13    | IDENTIFIER ASSIGN expression
+
+   14 type_specifier: INT
+   15               | FLOAT
+   16               | BOOL
+   17               | VOID
+   18               | STRING
+
+   19 func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt
+
+   20 proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON
+
+   21 params: param_list
+   22       | VOID
+   23       | %empty
+
+   24 param_list: param_list COMMA param
+   25           | param
+
+   26 param: type_specifier IDENTIFIER
+   27      | type_specifier IDENTIFIER LEFTSB RIGHTSB
+
+   28 compound_stmt: LEFTB stmt_list RIGHTB
+
+   29 stmt_list: stmt_list stmt
+   30          | %empty
+
+   31 stmt: expression_stmt
+   32     | compound_stmt
+   33     | selection_stmt
+   34     | iteration_stmt
+   35     | return_stmt
+   36     | var_decl
+   37     | COMMENT
+
+   38 expression_stmt: expression SEMICOLON
+   39                | SEMICOLON
+
+   40 selection_stmt: IF LEFTP expression RIGHTP stmt
+   41               | IF LEFTP expression RIGHTP stmt ELSE stmt
+
+   42 iteration_stmt: WHILE LEFTP expression RIGHTP stmt
+
+   43 return_stmt: RETURN SEMICOLON
+   44            | RETURN expression SEMICOLON
+
+   45 expression: variable ASSIGN expression
+   46           | relation_expr
+
+   47 variable: IDENTIFIER
+   48         | IDENTIFIER LEFTSB expression RIGHTSB
+
+   49 relation_expr: relation_expr LE addition
+   50              | relation_expr LT addition
+   51              | relation_expr GT addition
+   52              | relation_expr GE addition
+   53              | relation_expr EQ addition
+   54              | relation_expr NEQ addition
+   55              | addition
+
+   56 addition: addition ADD term
+   57         | addition SUB term
+   58         | term
+
+   59 term: term MUL factor
+   60     | term DIV factor
+   61     | factor
+
+   62 factor: LEFTP expression RIGHTP
+   63       | SUB factor
+   64       | variable
+   65       | call
+   66       | value
+
+   67 value: INTEGER_VALUE
+   68      | FLOAT_VALUE
+   69      | STRING_VALUE
+   70      | TRUE
+   71      | FALSE
+
+   72 call: IDENTIFIER LEFTP args RIGHTP
+
+   73 args: arg_list
+   74     | %empty
+
+   75 arg_list: arg_list COMMA expression
+   76         | expression
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    COLON (258)
+    SEMICOLON (259) 8 20 38 39 43 44
+    COMMA (260) 9 24 75
+    LEFTP (261) 19 20 40 41 42 62 72
+    RIGHTP (262) 19 20 40 41 42 62 72
+    LEFTB (263) 28
+    RIGHTB (264) 28
+    LEFTSB (265) 12 27 48
+    RIGHTSB (266) 12 27 48
+    DQUOTE (267)
+    SQUOTE (268)
+    RETURN (269) 43 44
+    FOR (270)
+    IN (271)
+    TO (272)
+    WHILE (273) 42
+    IF (274) 40 41
+    ELSE (275) 41
+    BREAK (276)
+    IDENTIFIER <str> (277) 11 12 13 19 20 26 27 47 48 72
+    STRING_VALUE <str> (278) 69
+    COMMENT <str> (279) 7 37
+    INT <valuetext> (280) 14
+    FLOAT <valuetext> (281) 15
+    BOOL <valuetext> (282) 16
+    VOID <valuetext> (283) 17 22
+    STRING <valuetext> (284) 18
+    INTEGER_VALUE <valuetext> (285) 12 67
+    FLOAT_VALUE <valuetext> (286) 68
+    FALSE <valuetext> (287) 71
+    TRUE <valuetext> (288) 70
+    ASSIGN (289) 13 45
+    GT <Op> (290) 51
+    LT <Op> (291) 50
+    EQ <Op> (292) 53
+    NEQ <Op> (293) 54
+    GE <Op> (294) 52
+    LE <Op> (295) 49
+    AND (296)
+    OR (297)
+    XOR (298)
+    ADD <Op> (299) 56
+    SUB <Op> (300) 57 63
+    MUL <Op> (301) 59
+    DIV <Op> (302) 60
+    UMINUS <Op> (303)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (49)
+        on left: 0
+    program (50)
+        on left: 1
+        on right: 0
+    decl_list (51)
+        on left: 2 3
+        on right: 1 2
+    decl <node> (52)
+        on left: 4 5 6 7
+        on right: 2 3
+    var_decl <node> (53)
+        on left: 8
+        on right: 4 36
+    vars <node> (54)
+        on left: 9 10
+        on right: 8 9
+    var <node> (55)
+        on left: 11 12 13
+        on right: 9 10
+    type_specifier <valueType> (56)
+        on left: 14 15 16 17 18
+        on right: 8 19 20 26 27
+    func_decl <node> (57)
+        on left: 19
+        on right: 5
+    proto_decl <node> (58)
+        on left: 20
+        on right: 6
+    params <node> (59)
+        on left: 21 22 23
+        on right: 19 20
+    param_list <node> (60)
+        on left: 24 25
+        on right: 21 24
+    param <node> (61)
+        on left: 26 27
+        on right: 24 25
+    compound_stmt <node> (62)
+        on left: 28
+        on right: 19 32
+    stmt_list <node> (63)
+        on left: 29 30
+        on right: 28 29
+    stmt <node> (64)
+        on left: 31 32 33 34 35 36 37
+        on right: 29 40 41 42
+    expression_stmt <node> (65)
+        on left: 38 39
+        on right: 31
+    selection_stmt <node> (66)
+        on left: 40 41
+        on right: 33
+    iteration_stmt <node> (67)
+        on left: 42
+        on right: 34
+    return_stmt <node> (68)
+        on left: 43 44
+        on right: 35
+    expression <node> (69)
+        on left: 45 46
+        on right: 13 38 40 41 42 44 45 48 62 75 76
+    variable <node> (70)
+        on left: 47 48
+        on right: 45 64
+    relation_expr <node> (71)
+        on left: 49 50 51 52 53 54 55
+        on right: 46 49 50 51 52 53 54
+    addition <node> (72)
+        on left: 56 57 58
+        on right: 49 50 51 52 53 54 55 56 57
+    term <node> (73)
+        on left: 59 60 61
+        on right: 56 57 58 59 60
+    factor <node> (74)
+        on left: 62 63 64 65 66
+        on right: 59 60 61 63
+    value <node> (75)
+        on left: 67 68 69 70 71
+        on right: 66
+    call <node> (76)
+        on left: 72
+        on right: 65
+    args <node> (77)
+        on left: 73 74
+        on right: 72
+    arg_list <node> (78)
+        on left: 75 76
+        on right: 73 75
+
+
+State 0
+
+    0 $accept: . program $end
+
+    COMMENT  shift, and go to state 1
+    INT      shift, and go to state 2
+    FLOAT    shift, and go to state 3
+    BOOL     shift, and go to state 4
+    VOID     shift, and go to state 5
+    STRING   shift, and go to state 6
+
+    program         go to state 7
+    decl_list       go to state 8
+    decl            go to state 9
+    var_decl        go to state 10
+    type_specifier  go to state 11
+    func_decl       go to state 12
+    proto_decl      go to state 13
+
+
+State 1
+
+    7 decl: COMMENT .
+
+    $default  reduce using rule 7 (decl)
+
+
+State 2
+
+   14 type_specifier: INT .
+
+    $default  reduce using rule 14 (type_specifier)
+
+
+State 3
+
+   15 type_specifier: FLOAT .
+
+    $default  reduce using rule 15 (type_specifier)
+
+
+State 4
+
+   16 type_specifier: BOOL .
+
+    $default  reduce using rule 16 (type_specifier)
+
+
+State 5
+
+   17 type_specifier: VOID .
+
+    $default  reduce using rule 17 (type_specifier)
+
+
+State 6
+
+   18 type_specifier: STRING .
+
+    $default  reduce using rule 18 (type_specifier)
+
+
+State 7
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 14
+
+
+State 8
+
+    1 program: decl_list .
+    2 decl_list: decl_list . decl
+
+    COMMENT  shift, and go to state 1
+    INT      shift, and go to state 2
+    FLOAT    shift, and go to state 3
+    BOOL     shift, and go to state 4
+    VOID     shift, and go to state 5
+    STRING   shift, and go to state 6
+
+    $default  reduce using rule 1 (program)
+
+    decl            go to state 15
+    var_decl        go to state 10
+    type_specifier  go to state 11
+    func_decl       go to state 12
+    proto_decl      go to state 13
+
+
+State 9
+
+    3 decl_list: decl .
+
+    $default  reduce using rule 3 (decl_list)
+
+
+State 10
+
+    4 decl: var_decl .
+
+    $default  reduce using rule 4 (decl)
+
+
+State 11
+
+    8 var_decl: type_specifier . vars SEMICOLON
+   19 func_decl: type_specifier . IDENTIFIER LEFTP params RIGHTP compound_stmt
+   20 proto_decl: type_specifier . IDENTIFIER LEFTP params RIGHTP SEMICOLON
+
+    IDENTIFIER  shift, and go to state 16
+
+    vars  go to state 17
+    var   go to state 18
+
+
+State 12
+
+    5 decl: func_decl .
+
+    $default  reduce using rule 5 (decl)
+
+
+State 13
+
+    6 decl: proto_decl .
+
+    $default  reduce using rule 6 (decl)
+
+
+State 14
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 15
+
+    2 decl_list: decl_list decl .
+
+    $default  reduce using rule 2 (decl_list)
+
+
+State 16
+
+   11 var: IDENTIFIER .
+   12    | IDENTIFIER . LEFTSB INTEGER_VALUE RIGHTSB
+   13    | IDENTIFIER . ASSIGN expression
+   19 func_decl: type_specifier IDENTIFIER . LEFTP params RIGHTP compound_stmt
+   20 proto_decl: type_specifier IDENTIFIER . LEFTP params RIGHTP SEMICOLON
+
+    LEFTP   shift, and go to state 19
+    LEFTSB  shift, and go to state 20
+    ASSIGN  shift, and go to state 21
+
+    $default  reduce using rule 11 (var)
+
+
+State 17
+
+    8 var_decl: type_specifier vars . SEMICOLON
+    9 vars: vars . COMMA var
+
+    SEMICOLON  shift, and go to state 22
+    COMMA      shift, and go to state 23
+
+
+State 18
+
+   10 vars: var .
+
+    $default  reduce using rule 10 (vars)
+
+
+State 19
+
+   19 func_decl: type_specifier IDENTIFIER LEFTP . params RIGHTP compound_stmt
+   20 proto_decl: type_specifier IDENTIFIER LEFTP . params RIGHTP SEMICOLON
+
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    BOOL    shift, and go to state 4
+    VOID    shift, and go to state 24
+    STRING  shift, and go to state 6
+
+    $default  reduce using rule 23 (params)
+
+    type_specifier  go to state 25
+    params          go to state 26
+    param_list      go to state 27
+    param           go to state 28
+
+
+State 20
+
+   12 var: IDENTIFIER LEFTSB . INTEGER_VALUE RIGHTSB
+
+    INTEGER_VALUE  shift, and go to state 29
+
+
+State 21
+
+   13 var: IDENTIFIER ASSIGN . expression
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    expression     go to state 38
+    variable       go to state 39
+    relation_expr  go to state 40
+    addition       go to state 41
+    term           go to state 42
+    factor         go to state 43
+    value          go to state 44
+    call           go to state 45
+
+
+State 22
+
+    8 var_decl: type_specifier vars SEMICOLON .
+
+    $default  reduce using rule 8 (var_decl)
+
+
+State 23
+
+    9 vars: vars COMMA . var
+
+    IDENTIFIER  shift, and go to state 46
+
+    var  go to state 47
+
+
+State 24
+
+   17 type_specifier: VOID .
+   22 params: VOID .
+
+    RIGHTP    reduce using rule 22 (params)
+    $default  reduce using rule 17 (type_specifier)
+
+
+State 25
+
+   26 param: type_specifier . IDENTIFIER
+   27      | type_specifier . IDENTIFIER LEFTSB RIGHTSB
+
+    IDENTIFIER  shift, and go to state 48
+
+
+State 26
+
+   19 func_decl: type_specifier IDENTIFIER LEFTP params . RIGHTP compound_stmt
+   20 proto_decl: type_specifier IDENTIFIER LEFTP params . RIGHTP SEMICOLON
+
+    RIGHTP  shift, and go to state 49
+
+
+State 27
+
+   21 params: param_list .
+   24 param_list: param_list . COMMA param
+
+    COMMA  shift, and go to state 50
+
+    $default  reduce using rule 21 (params)
+
+
+State 28
+
+   25 param_list: param .
+
+    $default  reduce using rule 25 (param_list)
+
+
+State 29
+
+   12 var: IDENTIFIER LEFTSB INTEGER_VALUE . RIGHTSB
+
+    RIGHTSB  shift, and go to state 51
+
+
+State 30
+
+   62 factor: LEFTP . expression RIGHTP
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    expression     go to state 52
+    variable       go to state 39
+    relation_expr  go to state 40
+    addition       go to state 41
+    term           go to state 42
+    factor         go to state 43
+    value          go to state 44
+    call           go to state 45
+
+
+State 31
+
+   47 variable: IDENTIFIER .
+   48         | IDENTIFIER . LEFTSB expression RIGHTSB
+   72 call: IDENTIFIER . LEFTP args RIGHTP
+
+    LEFTP   shift, and go to state 53
+    LEFTSB  shift, and go to state 54
+
+    $default  reduce using rule 47 (variable)
+
+
+State 32
+
+   69 value: STRING_VALUE .
+
+    $default  reduce using rule 69 (value)
+
+
+State 33
+
+   67 value: INTEGER_VALUE .
+
+    $default  reduce using rule 67 (value)
+
+
+State 34
+
+   68 value: FLOAT_VALUE .
+
+    $default  reduce using rule 68 (value)
+
+
+State 35
+
+   71 value: FALSE .
+
+    $default  reduce using rule 71 (value)
+
+
+State 36
+
+   70 value: TRUE .
+
+    $default  reduce using rule 70 (value)
+
+
+State 37
+
+   63 factor: SUB . factor
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    factor    go to state 56
+    value     go to state 44
+    call      go to state 45
+
+
+State 38
+
+   13 var: IDENTIFIER ASSIGN expression .
+
+    $default  reduce using rule 13 (var)
+
+
+State 39
+
+   45 expression: variable . ASSIGN expression
+   64 factor: variable .
+
+    ASSIGN  shift, and go to state 57
+
+    $default  reduce using rule 64 (factor)
+
+
+State 40
+
+   46 expression: relation_expr .
+   49 relation_expr: relation_expr . LE addition
+   50              | relation_expr . LT addition
+   51              | relation_expr . GT addition
+   52              | relation_expr . GE addition
+   53              | relation_expr . EQ addition
+   54              | relation_expr . NEQ addition
+
+    GT   shift, and go to state 58
+    LT   shift, and go to state 59
+    EQ   shift, and go to state 60
+    NEQ  shift, and go to state 61
+    GE   shift, and go to state 62
+    LE   shift, and go to state 63
+
+    $default  reduce using rule 46 (expression)
+
+
+State 41
+
+   55 relation_expr: addition .
+   56 addition: addition . ADD term
+   57         | addition . SUB term
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 55 (relation_expr)
+
+
+State 42
+
+   58 addition: term .
+   59 term: term . MUL factor
+   60     | term . DIV factor
+
+    MUL  shift, and go to state 66
+    DIV  shift, and go to state 67
+
+    $default  reduce using rule 58 (addition)
+
+
+State 43
+
+   61 term: factor .
+
+    $default  reduce using rule 61 (term)
+
+
+State 44
+
+   66 factor: value .
+
+    $default  reduce using rule 66 (factor)
+
+
+State 45
+
+   65 factor: call .
+
+    $default  reduce using rule 65 (factor)
+
+
+State 46
+
+   11 var: IDENTIFIER .
+   12    | IDENTIFIER . LEFTSB INTEGER_VALUE RIGHTSB
+   13    | IDENTIFIER . ASSIGN expression
+
+    LEFTSB  shift, and go to state 20
+    ASSIGN  shift, and go to state 21
+
+    $default  reduce using rule 11 (var)
+
+
+State 47
+
+    9 vars: vars COMMA var .
+
+    $default  reduce using rule 9 (vars)
+
+
+State 48
+
+   26 param: type_specifier IDENTIFIER .
+   27      | type_specifier IDENTIFIER . LEFTSB RIGHTSB
+
+    LEFTSB  shift, and go to state 68
+
+    $default  reduce using rule 26 (param)
+
+
+State 49
+
+   19 func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP . compound_stmt
+   20 proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP . SEMICOLON
+
+    SEMICOLON  shift, and go to state 69
+    LEFTB      shift, and go to state 70
+
+    compound_stmt  go to state 71
+
+
+State 50
+
+   24 param_list: param_list COMMA . param
+
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    BOOL    shift, and go to state 4
+    VOID    shift, and go to state 5
+    STRING  shift, and go to state 6
+
+    type_specifier  go to state 25
+    param           go to state 72
+
+
+State 51
+
+   12 var: IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB .
+
+    $default  reduce using rule 12 (var)
+
+
+State 52
+
+   62 factor: LEFTP expression . RIGHTP
+
+    RIGHTP  shift, and go to state 73
+
+
+State 53
+
+   72 call: IDENTIFIER LEFTP . args RIGHTP
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    $default  reduce using rule 74 (args)
+
+    expression     go to state 74
+    variable       go to state 39
+    relation_expr  go to state 40
+    addition       go to state 41
+    term           go to state 42
+    factor         go to state 43
+    value          go to state 44
+    call           go to state 45
+    args           go to state 75
+    arg_list       go to state 76
+
+
+State 54
+
+   48 variable: IDENTIFIER LEFTSB . expression RIGHTSB
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    expression     go to state 77
+    variable       go to state 39
+    relation_expr  go to state 40
+    addition       go to state 41
+    term           go to state 42
+    factor         go to state 43
+    value          go to state 44
+    call           go to state 45
+
+
+State 55
+
+   64 factor: variable .
+
+    $default  reduce using rule 64 (factor)
+
+
+State 56
+
+   63 factor: SUB factor .
+
+    $default  reduce using rule 63 (factor)
+
+
+State 57
+
+   45 expression: variable ASSIGN . expression
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    expression     go to state 78
+    variable       go to state 39
+    relation_expr  go to state 40
+    addition       go to state 41
+    term           go to state 42
+    factor         go to state 43
+    value          go to state 44
+    call           go to state 45
+
+
+State 58
+
+   51 relation_expr: relation_expr GT . addition
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    addition  go to state 79
+    term      go to state 42
+    factor    go to state 43
+    value     go to state 44
+    call      go to state 45
+
+
+State 59
+
+   50 relation_expr: relation_expr LT . addition
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    addition  go to state 80
+    term      go to state 42
+    factor    go to state 43
+    value     go to state 44
+    call      go to state 45
+
+
+State 60
+
+   53 relation_expr: relation_expr EQ . addition
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    addition  go to state 81
+    term      go to state 42
+    factor    go to state 43
+    value     go to state 44
+    call      go to state 45
+
+
+State 61
+
+   54 relation_expr: relation_expr NEQ . addition
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    addition  go to state 82
+    term      go to state 42
+    factor    go to state 43
+    value     go to state 44
+    call      go to state 45
+
+
+State 62
+
+   52 relation_expr: relation_expr GE . addition
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    addition  go to state 83
+    term      go to state 42
+    factor    go to state 43
+    value     go to state 44
+    call      go to state 45
+
+
+State 63
+
+   49 relation_expr: relation_expr LE . addition
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    addition  go to state 84
+    term      go to state 42
+    factor    go to state 43
+    value     go to state 44
+    call      go to state 45
+
+
+State 64
+
+   56 addition: addition ADD . term
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    term      go to state 85
+    factor    go to state 43
+    value     go to state 44
+    call      go to state 45
+
+
+State 65
+
+   57 addition: addition SUB . term
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    term      go to state 86
+    factor    go to state 43
+    value     go to state 44
+    call      go to state 45
+
+
+State 66
+
+   59 term: term MUL . factor
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    factor    go to state 87
+    value     go to state 44
+    call      go to state 45
+
+
+State 67
+
+   60 term: term DIV . factor
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    variable  go to state 55
+    factor    go to state 88
+    value     go to state 44
+    call      go to state 45
+
+
+State 68
+
+   27 param: type_specifier IDENTIFIER LEFTSB . RIGHTSB
+
+    RIGHTSB  shift, and go to state 89
+
+
+State 69
+
+   20 proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON .
+
+    $default  reduce using rule 20 (proto_decl)
+
+
+State 70
+
+   28 compound_stmt: LEFTB . stmt_list RIGHTB
+
+    $default  reduce using rule 30 (stmt_list)
+
+    stmt_list  go to state 90
+
+
+State 71
+
+   19 func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt .
+
+    $default  reduce using rule 19 (func_decl)
+
+
+State 72
+
+   24 param_list: param_list COMMA param .
+
+    $default  reduce using rule 24 (param_list)
+
+
+State 73
+
+   62 factor: LEFTP expression RIGHTP .
+
+    $default  reduce using rule 62 (factor)
+
+
+State 74
+
+   76 arg_list: expression .
+
+    $default  reduce using rule 76 (arg_list)
+
+
+State 75
+
+   72 call: IDENTIFIER LEFTP args . RIGHTP
+
+    RIGHTP  shift, and go to state 91
+
+
+State 76
+
+   73 args: arg_list .
+   75 arg_list: arg_list . COMMA expression
+
+    COMMA  shift, and go to state 92
+
+    $default  reduce using rule 73 (args)
+
+
+State 77
+
+   48 variable: IDENTIFIER LEFTSB expression . RIGHTSB
+
+    RIGHTSB  shift, and go to state 93
+
+
+State 78
+
+   45 expression: variable ASSIGN expression .
+
+    $default  reduce using rule 45 (expression)
+
+
+State 79
+
+   51 relation_expr: relation_expr GT addition .
+   56 addition: addition . ADD term
+   57         | addition . SUB term
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 51 (relation_expr)
+
+
+State 80
+
+   50 relation_expr: relation_expr LT addition .
+   56 addition: addition . ADD term
+   57         | addition . SUB term
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 50 (relation_expr)
+
+
+State 81
+
+   53 relation_expr: relation_expr EQ addition .
+   56 addition: addition . ADD term
+   57         | addition . SUB term
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 53 (relation_expr)
+
+
+State 82
+
+   54 relation_expr: relation_expr NEQ addition .
+   56 addition: addition . ADD term
+   57         | addition . SUB term
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 54 (relation_expr)
+
+
+State 83
+
+   52 relation_expr: relation_expr GE addition .
+   56 addition: addition . ADD term
+   57         | addition . SUB term
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 52 (relation_expr)
+
+
+State 84
+
+   49 relation_expr: relation_expr LE addition .
+   56 addition: addition . ADD term
+   57         | addition . SUB term
+
+    ADD  shift, and go to state 64
+    SUB  shift, and go to state 65
+
+    $default  reduce using rule 49 (relation_expr)
+
+
+State 85
+
+   56 addition: addition ADD term .
+   59 term: term . MUL factor
+   60     | term . DIV factor
+
+    MUL  shift, and go to state 66
+    DIV  shift, and go to state 67
+
+    $default  reduce using rule 56 (addition)
+
+
+State 86
+
+   57 addition: addition SUB term .
+   59 term: term . MUL factor
+   60     | term . DIV factor
+
+    MUL  shift, and go to state 66
+    DIV  shift, and go to state 67
+
+    $default  reduce using rule 57 (addition)
+
+
+State 87
+
+   59 term: term MUL factor .
+
+    $default  reduce using rule 59 (term)
+
+
+State 88
+
+   60 term: term DIV factor .
+
+    $default  reduce using rule 60 (term)
+
+
+State 89
+
+   27 param: type_specifier IDENTIFIER LEFTSB RIGHTSB .
+
+    $default  reduce using rule 27 (param)
+
+
+State 90
+
+   28 compound_stmt: LEFTB stmt_list . RIGHTB
+   29 stmt_list: stmt_list . stmt
+
+    SEMICOLON      shift, and go to state 94
+    LEFTP          shift, and go to state 30
+    LEFTB          shift, and go to state 70
+    RIGHTB         shift, and go to state 95
+    RETURN         shift, and go to state 96
+    WHILE          shift, and go to state 97
+    IF             shift, and go to state 98
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    COMMENT        shift, and go to state 99
+    INT            shift, and go to state 2
+    FLOAT          shift, and go to state 3
+    BOOL           shift, and go to state 4
+    VOID           shift, and go to state 5
+    STRING         shift, and go to state 6
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    var_decl         go to state 100
+    type_specifier   go to state 101
+    compound_stmt    go to state 102
+    stmt             go to state 103
+    expression_stmt  go to state 104
+    selection_stmt   go to state 105
+    iteration_stmt   go to state 106
+    return_stmt      go to state 107
+    expression       go to state 108
+    variable         go to state 39
+    relation_expr    go to state 40
+    addition         go to state 41
+    term             go to state 42
+    factor           go to state 43
+    value            go to state 44
+    call             go to state 45
+
+
+State 91
+
+   72 call: IDENTIFIER LEFTP args RIGHTP .
+
+    $default  reduce using rule 72 (call)
+
+
+State 92
+
+   75 arg_list: arg_list COMMA . expression
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    expression     go to state 109
+    variable       go to state 39
+    relation_expr  go to state 40
+    addition       go to state 41
+    term           go to state 42
+    factor         go to state 43
+    value          go to state 44
+    call           go to state 45
+
+
+State 93
+
+   48 variable: IDENTIFIER LEFTSB expression RIGHTSB .
+
+    $default  reduce using rule 48 (variable)
+
+
+State 94
+
+   39 expression_stmt: SEMICOLON .
+
+    $default  reduce using rule 39 (expression_stmt)
+
+
+State 95
+
+   28 compound_stmt: LEFTB stmt_list RIGHTB .
+
+    $default  reduce using rule 28 (compound_stmt)
+
+
+State 96
+
+   43 return_stmt: RETURN . SEMICOLON
+   44            | RETURN . expression SEMICOLON
+
+    SEMICOLON      shift, and go to state 110
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    expression     go to state 111
+    variable       go to state 39
+    relation_expr  go to state 40
+    addition       go to state 41
+    term           go to state 42
+    factor         go to state 43
+    value          go to state 44
+    call           go to state 45
+
+
+State 97
+
+   42 iteration_stmt: WHILE . LEFTP expression RIGHTP stmt
+
+    LEFTP  shift, and go to state 112
+
+
+State 98
+
+   40 selection_stmt: IF . LEFTP expression RIGHTP stmt
+   41               | IF . LEFTP expression RIGHTP stmt ELSE stmt
+
+    LEFTP  shift, and go to state 113
+
+
+State 99
+
+   37 stmt: COMMENT .
+
+    $default  reduce using rule 37 (stmt)
+
+
+State 100
+
+   36 stmt: var_decl .
+
+    $default  reduce using rule 36 (stmt)
+
+
+State 101
+
+    8 var_decl: type_specifier . vars SEMICOLON
+
+    IDENTIFIER  shift, and go to state 46
+
+    vars  go to state 17
+    var   go to state 18
+
+
+State 102
+
+   32 stmt: compound_stmt .
+
+    $default  reduce using rule 32 (stmt)
+
+
+State 103
+
+   29 stmt_list: stmt_list stmt .
+
+    $default  reduce using rule 29 (stmt_list)
+
+
+State 104
+
+   31 stmt: expression_stmt .
+
+    $default  reduce using rule 31 (stmt)
+
+
+State 105
+
+   33 stmt: selection_stmt .
+
+    $default  reduce using rule 33 (stmt)
+
+
+State 106
+
+   34 stmt: iteration_stmt .
+
+    $default  reduce using rule 34 (stmt)
+
+
+State 107
+
+   35 stmt: return_stmt .
+
+    $default  reduce using rule 35 (stmt)
+
+
+State 108
+
+   38 expression_stmt: expression . SEMICOLON
+
+    SEMICOLON  shift, and go to state 114
+
+
+State 109
+
+   75 arg_list: arg_list COMMA expression .
+
+    $default  reduce using rule 75 (arg_list)
+
+
+State 110
+
+   43 return_stmt: RETURN SEMICOLON .
+
+    $default  reduce using rule 43 (return_stmt)
+
+
+State 111
+
+   44 return_stmt: RETURN expression . SEMICOLON
+
+    SEMICOLON  shift, and go to state 115
+
+
+State 112
+
+   42 iteration_stmt: WHILE LEFTP . expression RIGHTP stmt
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    expression     go to state 116
+    variable       go to state 39
+    relation_expr  go to state 40
+    addition       go to state 41
+    term           go to state 42
+    factor         go to state 43
+    value          go to state 44
+    call           go to state 45
+
+
+State 113
+
+   40 selection_stmt: IF LEFTP . expression RIGHTP stmt
+   41               | IF LEFTP . expression RIGHTP stmt ELSE stmt
+
+    LEFTP          shift, and go to state 30
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    expression     go to state 117
+    variable       go to state 39
+    relation_expr  go to state 40
+    addition       go to state 41
+    term           go to state 42
+    factor         go to state 43
+    value          go to state 44
+    call           go to state 45
+
+
+State 114
+
+   38 expression_stmt: expression SEMICOLON .
+
+    $default  reduce using rule 38 (expression_stmt)
+
+
+State 115
+
+   44 return_stmt: RETURN expression SEMICOLON .
+
+    $default  reduce using rule 44 (return_stmt)
+
+
+State 116
+
+   42 iteration_stmt: WHILE LEFTP expression . RIGHTP stmt
+
+    RIGHTP  shift, and go to state 118
+
+
+State 117
+
+   40 selection_stmt: IF LEFTP expression . RIGHTP stmt
+   41               | IF LEFTP expression . RIGHTP stmt ELSE stmt
+
+    RIGHTP  shift, and go to state 119
+
+
+State 118
+
+   42 iteration_stmt: WHILE LEFTP expression RIGHTP . stmt
+
+    SEMICOLON      shift, and go to state 94
+    LEFTP          shift, and go to state 30
+    LEFTB          shift, and go to state 70
+    RETURN         shift, and go to state 96
+    WHILE          shift, and go to state 97
+    IF             shift, and go to state 98
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    COMMENT        shift, and go to state 99
+    INT            shift, and go to state 2
+    FLOAT          shift, and go to state 3
+    BOOL           shift, and go to state 4
+    VOID           shift, and go to state 5
+    STRING         shift, and go to state 6
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    var_decl         go to state 100
+    type_specifier   go to state 101
+    compound_stmt    go to state 102
+    stmt             go to state 120
+    expression_stmt  go to state 104
+    selection_stmt   go to state 105
+    iteration_stmt   go to state 106
+    return_stmt      go to state 107
+    expression       go to state 108
+    variable         go to state 39
+    relation_expr    go to state 40
+    addition         go to state 41
+    term             go to state 42
+    factor           go to state 43
+    value            go to state 44
+    call             go to state 45
+
+
+State 119
+
+   40 selection_stmt: IF LEFTP expression RIGHTP . stmt
+   41               | IF LEFTP expression RIGHTP . stmt ELSE stmt
+
+    SEMICOLON      shift, and go to state 94
+    LEFTP          shift, and go to state 30
+    LEFTB          shift, and go to state 70
+    RETURN         shift, and go to state 96
+    WHILE          shift, and go to state 97
+    IF             shift, and go to state 98
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    COMMENT        shift, and go to state 99
+    INT            shift, and go to state 2
+    FLOAT          shift, and go to state 3
+    BOOL           shift, and go to state 4
+    VOID           shift, and go to state 5
+    STRING         shift, and go to state 6
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    var_decl         go to state 100
+    type_specifier   go to state 101
+    compound_stmt    go to state 102
+    stmt             go to state 121
+    expression_stmt  go to state 104
+    selection_stmt   go to state 105
+    iteration_stmt   go to state 106
+    return_stmt      go to state 107
+    expression       go to state 108
+    variable         go to state 39
+    relation_expr    go to state 40
+    addition         go to state 41
+    term             go to state 42
+    factor           go to state 43
+    value            go to state 44
+    call             go to state 45
+
+
+State 120
+
+   42 iteration_stmt: WHILE LEFTP expression RIGHTP stmt .
+
+    $default  reduce using rule 42 (iteration_stmt)
+
+
+State 121
+
+   40 selection_stmt: IF LEFTP expression RIGHTP stmt .
+   41               | IF LEFTP expression RIGHTP stmt . ELSE stmt
+
+    ELSE  shift, and go to state 122
+
+    ELSE      [reduce using rule 40 (selection_stmt)]
+    $default  reduce using rule 40 (selection_stmt)
+
+
+State 122
+
+   41 selection_stmt: IF LEFTP expression RIGHTP stmt ELSE . stmt
+
+    SEMICOLON      shift, and go to state 94
+    LEFTP          shift, and go to state 30
+    LEFTB          shift, and go to state 70
+    RETURN         shift, and go to state 96
+    WHILE          shift, and go to state 97
+    IF             shift, and go to state 98
+    IDENTIFIER     shift, and go to state 31
+    STRING_VALUE   shift, and go to state 32
+    COMMENT        shift, and go to state 99
+    INT            shift, and go to state 2
+    FLOAT          shift, and go to state 3
+    BOOL           shift, and go to state 4
+    VOID           shift, and go to state 5
+    STRING         shift, and go to state 6
+    INTEGER_VALUE  shift, and go to state 33
+    FLOAT_VALUE    shift, and go to state 34
+    FALSE          shift, and go to state 35
+    TRUE           shift, and go to state 36
+    SUB            shift, and go to state 37
+
+    var_decl         go to state 100
+    type_specifier   go to state 101
+    compound_stmt    go to state 102
+    stmt             go to state 123
+    expression_stmt  go to state 104
+    selection_stmt   go to state 105
+    iteration_stmt   go to state 106
+    return_stmt      go to state 107
+    expression       go to state 108
+    variable         go to state 39
+    relation_expr    go to state 40
+    addition         go to state 41
+    term             go to state 42
+    factor           go to state 43
+    value            go to state 44
+    call             go to state 45
+
+
+State 123
+
+   41 selection_stmt: IF LEFTP expression RIGHTP stmt ELSE stmt .
+
+    $default  reduce using rule 41 (selection_stmt)

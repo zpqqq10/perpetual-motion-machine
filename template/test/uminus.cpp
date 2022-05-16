@@ -4,15 +4,16 @@ int aaa();
 int aaa()
 {
     float k[10];
-    float a = 3.2;
+    float a;
+    int b, x = 2; 
     // int x = 3 * 4;
-    k[2] = 2.0;
-    a = 2.0;
-    k[2] = a;
-    a = k[2];
+    // k[2] = 2.0;
+    // a = 2.0;
+    // k[2] = a;
+    a = 2 / x;
     {
         // float b = k[3];
     }
-    return 1;
+    return b*x;
 
 }

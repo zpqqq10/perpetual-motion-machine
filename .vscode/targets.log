@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat May 14 22:36:59 2022
+# Make data base, printed on Mon May 16 08:11:01 2022
 
 # Variables
 
@@ -39,7 +39,7 @@ CURDIR := /home/n7utb/perpetual-motion-machine
 # makefile
 SHELL = /bin/sh
 # environment
-VSCODE_NLS_CONFIG = {"locale":"zh-cn","availableLanguages":{"*":"zh-cn"},"_languagePackId":"42e84e0914b17800d483f69e299e1b00.zh-cn","_translationsConfigFile":"/home/n7utb/.vscode-server/data/clp/42e84e0914b17800d483f69e299e1b00.zh-cn/tcf.json","_cacheRoot":"/home/n7utb/.vscode-server/data/clp/42e84e0914b17800d483f69e299e1b00.zh-cn","_resolvedLanguagePackCoreLocation":"/home/n7utb/.vscode-server/data/clp/42e84e0914b17800d483f69e299e1b00.zh-cn/da15b6fd3ef856477bf6f4fb29ba1b7af717770d","_corruptedFile":"/home/n7utb/.vscode-server/data/clp/42e84e0914b17800d483f69e299e1b00.zh-cn/corrupted.info","_languagePackSupport":true}
+VSCODE_NLS_CONFIG = {"locale":"zh-cn","availableLanguages":{"*":"zh-cn"},"_languagePackId":"42e84e0914b17800d483f69e299e1b00.zh-cn","_translationsConfigFile":"/home/n7utb/.vscode-server/data/clp/42e84e0914b17800d483f69e299e1b00.zh-cn/tcf.json","_cacheRoot":"/home/n7utb/.vscode-server/data/clp/42e84e0914b17800d483f69e299e1b00.zh-cn","_resolvedLanguagePackCoreLocation":"/home/n7utb/.vscode-server/data/clp/42e84e0914b17800d483f69e299e1b00.zh-cn/57fd6d0195bb9b9d1b49f6da5db789060795de47","_corruptedFile":"/home/n7utb/.vscode-server/data/clp/42e84e0914b17800d483f69e299e1b00.zh-cn/corrupted.info","_languagePackSupport":true}
 # environment
 _ = /usr/bin/make
 # makefile
@@ -55,15 +55,15 @@ LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/n7utb
 # environment
-SSH_CONNECTION = 39.174.145.14 21499 10.0.16.4 22
+SSH_CONNECTION = 183.157.160.26 23929 10.0.16.4 22
 # environment
-PATH = /home/n7utb/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/remote-cli:/home/n7utb/.local/bin:/home/n7utb/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+PATH = /home/n7utb/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/bin/remote-cli:/home/n7utb/.local/bin:/home/n7utb/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # environment
 XDG_RUNTIME_DIR = /run/user/1002
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-d5088ad1-46a5-4b45-9a25-9cba26ccded5.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-474857e7-b014-480c-b808-65483b887ebc.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -105,7 +105,7 @@ MAKECMDGOALS := all
 # environment
 SHLVL = 1
 # environment
-XDG_SESSION_ID = 31230
+XDG_SESSION_ID = 1608
 # environment
 USER = n7utb
 # makefile
@@ -125,11 +125,11 @@ MAKEFLAGS = pqrR
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_CLIENT = 39.174.145.14 21499 22
+SSH_CLIENT = 183.157.160.26 23929 22
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
-BROWSER = /home/n7utb/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/helpers/browser.sh
+BROWSER = /home/n7utb/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/bin/helpers/browser.sh
 # environment
 VSCODE_HANDLES_SIGPIPE = true
 # default
@@ -167,9 +167,9 @@ MOTD_SHOWN = pam
 
 # Directories
 
-# . (device 64514, inode 1693173): 7 files, no impossibilities.
+# . (device 64514, inode 1693173): 6 files, no impossibilities.
 
-# 7 files, no impossibilities in 1 directories.
+# 6 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -214,17 +214,18 @@ GNUmakefile:
 # files hash-table stats:
 # Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
 # VPATH Search Paths
+ 
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 15 / storage = 130 B / avg = 8 B
-# current buf: size = 8162 B / used = 130 B / count = 15 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 14 / storage = 122 B / avg = 8 B
+# current buf: size = 8162 B / used = 122 B / count = 14 / avg = 8 B
 
-# strcache performance: lookups = 18 / hit rate = 16%
+# strcache performance: lookups = 17 / hit rate = 17%
 # hash-table stats:
-# Load=15/8192=0%, Rehash=0, Collisions=1/18=6%
-# Finished Make data base on Sat May 14 22:36:59 2022
+# Load=14/8192=0%, Rehash=0, Collisions=1/17=6%
+# Finished Make data base on Mon May 16 08:11:01 2022
 
  

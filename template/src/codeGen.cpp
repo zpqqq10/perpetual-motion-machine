@@ -85,7 +85,7 @@ Value *getInitialValue(int type)
     case TYPEBOOL:
         return ConstantInt::get(TheContext, APInt(1, 0, false));
     case TYPEVOID:
-        return ConstantPointerNull::getNullValue(Type::getInt32Ty(TheContext));
+        return nullptr;
     case TYPECHAR:
         return ConstantInt::get(TheContext, APInt(8, 0, true));
     case TYPEINT:
@@ -235,7 +235,7 @@ Function *ProtoAST::CodeGen()
 /************************ expression ************************/
 Value *VoidAST::CodeGen()
 {
-    return nullptr;
+    return ConstantPointerNull::getNullValue(TypeGen(TYPEINT));
 }
 
 Value *IntegerAST::CodeGen()
@@ -267,11 +267,11 @@ Value *BinaryOpAST::CodeGen()
     {
         if (!dynamic_cast<RefAST *>(children[0]) && !dynamic_cast<ArraySubscriptExpr *>(children[0]))
             return LogErrorV("Destination of assignment must be assignable!");
-        if(dynamic_cast<ArraySubscriptExpr *>(children[0]))
+        if (dynamic_cast<ArraySubscriptExpr *>(children[0]))
         {
             dynamic_cast<ArraySubscriptExpr *>(children[0])->isStore = true;
         }
-        if(dynamic_cast<RefAST *>(children[0]))
+        if (dynamic_cast<RefAST *>(children[0]))
         {
             dynamic_cast<RefAST *>(children[0])->isStore = true;
         }
@@ -282,18 +282,28 @@ Value *BinaryOpAST::CodeGen()
     if (!L || !R)
         return LogErrorV("Expression Error!");
 
-    if (((L->getType()->isFloatTy() || L->getType()->isIntegerTy()) && (R->getType()->isFloatTy() || R->getType()->isIntegerTy())) || (L->getType()->isPointerTy() && type == OPASSIGN))
+    if (((L->getType()->isFloatTy() || L->getType()->isIntegerTy()) && (R->getType()->isFloatTy() || R->getType()->isIntegerTy())) || (type == OPASSIGN && L->getType()->isPointerTy()))
     {
         // can be compared of computed;
-        if (type == OPDIV)
+        if (type != OPASSIGN && (L->getType()->isFloatTy() || R->getType()->isFloatTy()))
         {
-            // fflag = true;
+            debug("return float");
+            fflag = true;
         }
         // if return float, make some necessary conversion
-        if (fflag)
+        if (fflag && type != OPASSIGN)
         {
-            L = Builder.CreateUIToFP(L, TypeGen(TYPEFLOAT));
-            R = Builder.CreateUIToFP(R, TypeGen(TYPEFLOAT));
+            if (!L->getType()->isFloatTy())
+            {
+                L = Builder.CreateSIToFP(L, TypeGen(TYPEFLOAT));
+            }
+            if (!R->getType()->isFloatTy())
+            {
+                // if(R->getType()->isSingleValueType())
+                R = Builder.CreateSIToFP(R, TypeGen(TYPEFLOAT));
+                // else
+                //     R = Builder.CreateUIToFP(R, TypeGen(TYPEFLOAT));
+            }
         }
         switch (type)
         {
@@ -308,7 +318,9 @@ Value *BinaryOpAST::CodeGen()
         case OPMUL:
             return Builder.CreateMul(L, R, "multmp");
         case OPDIV:
-            return Builder.CreateFDiv(L, R, "divftmp");
+            return fflag
+                       ? Builder.CreateFDiv(L, R, "divftmp")
+                       : Builder.CreateSDiv(L, R, "divstmp");
         case OPLT:
             return fflag
                        ? Builder.CreateFCmpOLT(L, R, "cmpftmp")
@@ -334,9 +346,16 @@ Value *BinaryOpAST::CodeGen()
                        ? Builder.CreateFCmpONE(L, R, "cmpftmp")
                        : Builder.CreateICmpNE(L, R, "cmptmp");
         case OPASSIGN:
-            // TODO 使用store更新值
+            // convert right operand
+            if (L->getType()->getPointerElementType()->isFloatTy() && R->getType()->isIntegerTy())
+            {
+                R = Builder.CreateSIToFP(R, TypeGen(TYPEFLOAT));
+            }
+            else if (L->getType()->getPointerElementType()->isIntegerTy() && R->getType()->isFloatTy())
+            {
+                R = Builder.CreateFPToSI(R, TypeGen(TYPEINT));
+            }
             return Builder.CreateStore(R, L);
-
         default:
             return LogErrorV("invalid binary operator");
             // case OPAND:
@@ -395,14 +414,15 @@ Value *ArraySubscriptExpr::CodeGen()
 {
     Value *arrVal = children[0]->CodeGen();
     std::vector<Value *> indices;
+    // TODO 检查下标为int
     Value *index = children[1]->CodeGen();
+    indices.push_back(getInitialValue(TYPEINT));
     indices.push_back(index);
     Value *elePtr = Builder.CreateInBoundsGEP(arrVal, indices);
-    if(isStore)
+    if (isStore)
         return elePtr;
     else
-        return Builder.CreateLoad(arrVal->getType()->getPointerElementType()->getArrayElementType(),elePtr);
-    
+        return Builder.CreateLoad(arrVal->getType()->getPointerElementType()->getArrayElementType(), elePtr);
 }
 
 Value *CallExpr::CodeGen()
@@ -464,7 +484,32 @@ Value *IterationStmtAST::CodeGen()
 
 Value *ReturnStmtAST::CodeGen()
 {
-    Value *ret = ConstantInt::get(TheContext, APInt(32, 1234, true));
-    Builder.CreateRet(ret);
+    Function *TheFunction = Builder.GetInsertBlock()->getParent();
+    if (children.size())
+    {
+        if (TheFunction->getReturnType()->getTypeID() == Type::VoidTyID)
+        {
+            // there is a value to return but the function requires nothing to return
+            return LogErrorV("Return value error!");
+        }
+        else
+        {
+            // there is a return type and there is a value to return
+            Value *ret = children[0]->CodeGen();
+            Builder.CreateRet(ret);
+        }
+    }
+    else {
+        if (TheFunction->getReturnType()->getTypeID())
+        {
+            // there is nothing to return but the function requires something to return
+            return LogErrorV("Return value error!");
+        }
+        else {
+            // return nothing
+            Builder.CreateRet(nullptr);
+        }
+    }
+
     return nullptr;
 }
