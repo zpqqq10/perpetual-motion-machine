@@ -29,6 +29,9 @@ static inline void logImpl(const char *s)
 
 
 extern bool option_debug;
+extern std::string file_output;
+extern bool option_show_ir;
+extern std::string file_input;
 
 extern void warning(const char *msg, ...);
 extern void NO_RETURN error(const char *msg, ...);

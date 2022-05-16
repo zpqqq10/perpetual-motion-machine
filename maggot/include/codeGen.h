@@ -29,6 +29,7 @@
 #include "declaration.h"
 #include "expression.h"
 #include "statement.h"
+#include "main.h"
 
 using namespace llvm;
 
@@ -37,6 +38,7 @@ static IRBuilder<> Builder(TheContext);
 static std::unique_ptr<Module> TheModule = std::make_unique<Module>("maggot", TheContext);
 static std::map<std::string, Value *> NamedValues;
 static std::vector<CompoundStmtAST*> compoundstack;
+
 
 /// LogError* - These are little helper functions for error handling.
 std::unique_ptr<BaseAST> LogError(const char *Str);

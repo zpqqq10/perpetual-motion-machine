@@ -4,9 +4,9 @@ YACC = yacc -d
 CXX = clang++
 # CXX = g++
 INCLUDEDIR = include/
-CXXFLAGS = -Wall -fPIC -I $(INCLUDEDIR) `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti -frtti
+CXXFLAGS = -Wall -fPIC -I $(INCLUDEDIR) `llvm-config --cxxflags  ` -fno-rtti -frtti
 # CXXFLAGS = `llvm-config --cxxflags --ldflags --system-libs --libs core` -fno-rtti
-
+LLVMFLAGS = `llvm-config --system-libs --ldflags --libs core`
 OBJS=\
 	src/main.o \
 	src/utils.o \
@@ -16,7 +16,7 @@ OBJS=\
 	
 
 maggot: $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $@ 
+	$(CXX) $(CXXFLAGS) $(LLVMFLAGS) $(OBJS) -o $@ 
 src/%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 src/lex.yy.o: src/lex.yy.cpp

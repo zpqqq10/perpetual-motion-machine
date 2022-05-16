@@ -1,16 +1,24 @@
 #include "codeGen.h"
+#include <fstream>
+#include <sstream>
 
 Value *Program::CodeGen()
 {
+    error_code errorcode;
     TheModule->setTargetTriple("x86_64-pc-linux-gnu");
     TheModule->setDataLayout("e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128");
+    TheModule->setSourceFileName(file_input);
     for (size_t i = 0; i < children.size(); i++)
     {
         children[i]->CodeGen();
     }
-    // std::cout << TheModule->getDataLayoutStr() << std::endl;
-    // std::cout << TheModule->getTargetTriple() << std::endl;
-    TheModule->print(errs(), nullptr);
+    if (option_show_ir)
+        TheModule->print(errs(), nullptr);
+    else
+    {
+        raw_fd_ostream file(file_output, errorcode);
+        TheModule->print(file, nullptr);
+    }
     return nullptr;
 }
 
@@ -30,8 +38,7 @@ Value *LogErrorV(const char *Str)
 
 static AllocaInst *CreateEntryBlockAlloca(Function *TheFunction, StringRef VarName, Type *type)
 {
-    IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
-                     TheFunction->getEntryBlock().begin());
+    IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
 
     return TmpB.CreateAlloca(type, nullptr, VarName);
 }
@@ -163,6 +170,7 @@ Value *ParmVarDeclList::CodeGen()
     return nullptr;
 }
 
+// TODO bdz
 Function *FuncAST::CodeGen()
 {
     // First, check for an existing function from a previous 'extern' declaration.
@@ -181,13 +189,14 @@ Function *FuncAST::CodeGen()
 
     // Record the function arguments in the NamedValues map.
     NamedValues.clear();
-
+    ParmVarDeclList *argslist = dynamic_cast<ParmVarDeclList *>(children[0]);
+    unsigned Idx = 0;
     for (auto &Arg : TheFunction->args())
     {
-
-        NamedValues[std::string(Arg.getName())] = &Arg;
         AllocaInst *alloca = CreateEntryBlockAlloca(TheFunction, Arg.getName(), Arg.getType());
+        NamedValues[argslist->parms[Idx]->name] = alloca;
         Builder.CreateStore(&Arg, alloca);
+        Idx++;
     }
 
     children[1]->CodeGen();
@@ -199,16 +208,12 @@ Function *FuncAST::CodeGen()
 
     return TheFunction;
 
-    // Error reading body, remove function.
-    // TheFunction->eraseFromParent();
-    // return nullptr;
 }
 
 Function *ProtoAST::CodeGen()
 {
     // Make the function type:  double(double,double) etc.
     // ? check for re-declaration?
-    // TODO
     ParmVarDeclList *argslist = dynamic_cast<ParmVarDeclList *>(children[0]);
     size_t argssize = argslist->parms.size();
 
@@ -227,8 +232,11 @@ Function *ProtoAST::CodeGen()
     // Set names for all arguments.
     unsigned Idx = 0;
     for (auto &Arg : F->args())
+    {
         Arg.setName(argslist->parms[Idx]->name);
-
+        Idx++;
+    }
+    
     return F;
 }
 
@@ -262,7 +270,7 @@ Value *StringAST::CodeGen()
 Value *BinaryOpAST::CodeGen()
 {
     // flag indicating whether the return type is float
-    bool fflag = false;
+    bool fflag = false, conversion = false;
     if (type == OPASSIGN)
     {
         if (!dynamic_cast<RefAST *>(children[0]) && !dynamic_cast<ArraySubscriptExpr *>(children[0]))
@@ -281,13 +289,12 @@ Value *BinaryOpAST::CodeGen()
     Value *R = children[1]->CodeGen();
     if (!L || !R)
         return LogErrorV("Expression Error!");
-
+    
     if (((L->getType()->isFloatTy() || L->getType()->isIntegerTy()) && (R->getType()->isFloatTy() || R->getType()->isIntegerTy())) || (type == OPASSIGN && L->getType()->isPointerTy()))
     {
         // can be compared of computed;
         if (type != OPASSIGN && (L->getType()->isFloatTy() || R->getType()->isFloatTy()))
         {
-            debug("return float");
             fflag = true;
         }
         // if return float, make some necessary conversion
@@ -295,11 +302,13 @@ Value *BinaryOpAST::CodeGen()
         {
             if (!L->getType()->isFloatTy())
             {
+                conversion = true;
                 L = Builder.CreateSIToFP(L, TypeGen(TYPEFLOAT));
             }
             if (!R->getType()->isFloatTy())
             {
                 // if(R->getType()->isSingleValueType())
+                conversion = true;
                 R = Builder.CreateSIToFP(R, TypeGen(TYPEFLOAT));
                 // else
                 //     R = Builder.CreateUIToFP(R, TypeGen(TYPEFLOAT));
@@ -308,15 +317,17 @@ Value *BinaryOpAST::CodeGen()
         switch (type)
         {
         case OPADD:
-            return fflag
-                       ? Builder.CreateFAdd(L, R, "addftmp")
-                       : Builder.CreateAdd(L, R, "addtmp");
+            return conversion
+                       ? fflag ? Builder.CreateFAdd(L, R, "addftmp") : Builder.CreateAdd(L, R, "addtmp")
+                       : Builder.CreateNSWAdd(L, R, "addtmp");
         case OPSUB:
-            return fflag
-                       ? Builder.CreateFSub(L, R, "subftmp")
-                       : Builder.CreateSub(L, R, "subtmp");
+            return conversion
+                       ? fflag ? Builder.CreateFSub(L, R, "subftmp") : Builder.CreateSub(L, R, "subtmp")
+                       : Builder.CreateNSWSub(L, R, "subtmp");
         case OPMUL:
-            return Builder.CreateMul(L, R, "multmp");
+            return conversion
+                       ? fflag ? Builder.CreateFMul(L, R, "mulftmp") : Builder.CreateMul(L, R, "multmp")
+                       : Builder.CreateNSWMul(L, R, "multmp");
         case OPDIV:
             return fflag
                        ? Builder.CreateFDiv(L, R, "divftmp")
@@ -373,7 +384,7 @@ Value *BinaryOpAST::CodeGen()
 
 Value *UnaryOpAST::CodeGen()
 {
-    return Builder.CreateNeg(children[0]->CodeGen());
+    return Builder.CreateNSWNeg(children[0]->CodeGen());
     // return nullptr;
 }
 
@@ -414,8 +425,11 @@ Value *ArraySubscriptExpr::CodeGen()
 {
     Value *arrVal = children[0]->CodeGen();
     std::vector<Value *> indices;
-    // TODO 检查下标为int
     Value *index = children[1]->CodeGen();
+    if (!index->getType()->isIntegerTy())
+    {
+        return LogErrorV("Index must be integer!");
+    }
     indices.push_back(getInitialValue(TYPEINT));
     indices.push_back(index);
     Value *elePtr = Builder.CreateInBoundsGEP(arrVal, indices);
@@ -425,6 +439,7 @@ Value *ArraySubscriptExpr::CodeGen()
         return Builder.CreateLoad(arrVal->getType()->getPointerElementType()->getArrayElementType(), elePtr);
 }
 
+// TODO bdz
 Value *CallExpr::CodeGen()
 {
     // Look up the name in the global module table.
@@ -434,7 +449,6 @@ Value *CallExpr::CodeGen()
 
     // If argument mismatch error.
     // TODO
-    size_t argssize = 0;
     // if (CalleeF->arg_size() != argssize)
     //     return LogErrorV("Incorrect # arguments passed");
     std::vector<Value *> ArgsV;
@@ -472,11 +486,13 @@ Value *CompoundStmtAST::CodeGen()
     return nullptr;
 }
 
+// TODO bdz
 Value *SelectionStmtAST::CodeGen()
 {
     return nullptr;
 }
 
+// TODO bdz
 Value *IterationStmtAST::CodeGen()
 {
     return nullptr;
@@ -499,13 +515,15 @@ Value *ReturnStmtAST::CodeGen()
             Builder.CreateRet(ret);
         }
     }
-    else {
+    else
+    {
         if (TheFunction->getReturnType()->getTypeID())
         {
             // there is nothing to return but the function requires something to return
             return LogErrorV("Return value error!");
         }
-        else {
+        else
+        {
             // return nothing
             Builder.CreateRet(nullptr);
         }
