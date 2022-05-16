@@ -123,7 +123,6 @@ Value *VarDeclList::CodeGen()
             }
             else
             {
-
                 InitVal = getInitialValue(var->type);
             }
             // maintain global variable
@@ -170,15 +169,37 @@ Value *ParmVarDeclList::CodeGen()
     return nullptr;
 }
 
-// TODO bdz
 Function *FuncAST::CodeGen()
 {
     // First, check for an existing function from a previous 'extern' declaration.
     Function *TheFunction = TheModule->getFunction(funcname);
 
-    // TODO: generate prototype
-    // if (!TheFunction)
-    //     ;
+    if (!TheFunction)
+    {
+        ParmVarDeclList *argslist = dynamic_cast<ParmVarDeclList *>(children[0]);
+        size_t argssize = argslist->parms.size();
+
+        std::vector<Type *> args;
+        for (int i = 0; i < argssize; i++)
+        {
+            args.push_back(TypeGen(argslist->parms[i]->type));
+        }
+        FunctionType *FT =
+            FunctionType::get(TypeGen(rettype), args, false);
+
+        Function *F =
+            Function::Create(FT, Function::ExternalLinkage, funcname, TheModule.get());
+
+        // Set names for all arguments.
+        unsigned Idx = 0;
+        for (auto &Arg : F->args())
+        {
+            Arg.setName(argslist->parms[Idx]->name);
+            Idx++;
+        }
+
+        TheFunction = TheModule->getFunction(funcname);
+    }
 
     if (!TheFunction->empty())
         return (Function *)LogErrorV("Function cannot be redefined.");
@@ -207,7 +228,6 @@ Function *FuncAST::CodeGen()
     verifyFunction(*TheFunction);
 
     return TheFunction;
-
 }
 
 Function *ProtoAST::CodeGen()
@@ -218,7 +238,6 @@ Function *ProtoAST::CodeGen()
     size_t argssize = argslist->parms.size();
 
     std::vector<Type *> args;
-
     for (int i = 0; i < argssize; i++)
     {
         args.push_back(TypeGen(argslist->parms[i]->type));
@@ -236,7 +255,7 @@ Function *ProtoAST::CodeGen()
         Arg.setName(argslist->parms[Idx]->name);
         Idx++;
     }
-    
+
     return F;
 }
 
@@ -289,7 +308,7 @@ Value *BinaryOpAST::CodeGen()
     Value *R = children[1]->CodeGen();
     if (!L || !R)
         return LogErrorV("Expression Error!");
-    
+
     if (((L->getType()->isFloatTy() || L->getType()->isIntegerTy()) && (R->getType()->isFloatTy() || R->getType()->isIntegerTy())) || (type == OPASSIGN && L->getType()->isPointerTy()))
     {
         // can be compared of computed;
@@ -439,7 +458,6 @@ Value *ArraySubscriptExpr::CodeGen()
         return Builder.CreateLoad(arrVal->getType()->getPointerElementType()->getArrayElementType(), elePtr);
 }
 
-// TODO bdz
 Value *CallExpr::CodeGen()
 {
     // Look up the name in the global module table.
@@ -448,17 +466,19 @@ Value *CallExpr::CodeGen()
         return LogErrorV("Unknown function referenced");
 
     // If argument mismatch error.
-    // TODO
-    // if (CalleeF->arg_size() != argssize)
-    //     return LogErrorV("Incorrect # arguments passed");
+
+    if (CalleeF->arg_size() != 0 &&
+        (children.size() < 2 || ((dynamic_cast<ArgsList *>(children[1])->args.size()) != (CalleeF->arg_size()))))
+        return LogErrorV("Incorrect # arguments passed");
+
+    size_t argssize = CalleeF->arg_size();
     std::vector<Value *> ArgsV;
-    // TODO 这部分应该可以放在ArgsList::CodeGen()
-    // for (unsigned i = 0; i != argssize; ++i)
-    // {
-    //     ArgsV.push_back(Args[i]->codegen());
-    //     if (!ArgsV.back())
-    //         return nullptr;
-    // }
+    for (unsigned i = 0; i != argssize; ++i)
+    {
+        ArgsV.push_back(dynamic_cast<ArgsList *>(children[1])->args[i]->CodeGen());
+        if (!ArgsV.back())
+            return nullptr;
+    }
 
     return Builder.CreateCall(CalleeF, ArgsV, "calltmp");
 }
@@ -486,16 +506,85 @@ Value *CompoundStmtAST::CodeGen()
     return nullptr;
 }
 
-// TODO bdz
 Value *SelectionStmtAST::CodeGen()
 {
+    Value *cond = children[0]->CodeGen();
+
+    if (!cond)
+    {
+        return LogErrorV("Need condition expression in if statement.");
+    }
+
+    Function *atFunc = Builder.GetInsertBlock()->getParent();
+
+    BasicBlock *thenBB = BasicBlock::Create(TheContext, "THEN", atFunc);
+    BasicBlock *elseBB = BasicBlock::Create(TheContext, "ELSE");
+    BasicBlock *contBB = BasicBlock::Create(TheContext, "IFCONT");
+
+
+
+    Builder.CreateCondBr(cond, thenBB, elseBB);
+    Builder.SetInsertPoint(thenBB);
+
+    // then
+    children[1]->CodeGen();
+    Builder.CreateBr(contBB);
+
+    thenBB = Builder.GetInsertBlock();
+    atFunc->getBasicBlockList().push_back(elseBB);
+
+    Builder.SetInsertPoint(elseBB);
+
+    // else
+    if (children.size() == 3)
+    {
+        children[2]->CodeGen();
+    }
+
+    Builder.CreateBr(contBB);
+
+    elseBB = Builder.GetInsertBlock();
+    atFunc->getBasicBlockList().push_back(contBB);
+
+    Builder.SetInsertPoint(contBB);
+
     return nullptr;
 }
 
-// TODO bdz
 Value *IterationStmtAST::CodeGen()
 {
-    return nullptr;
+    Function *atFunc = Builder.GetInsertBlock()->getParent();
+
+    BasicBlock *condBB = BasicBlock::Create(TheContext, "COND", atFunc);
+    BasicBlock *loopBodyBB = BasicBlock::Create(TheContext, "LOOP", atFunc);
+    BasicBlock *endBB = BasicBlock::Create(TheContext, "ENDLOOP", atFunc);
+    // Init
+    Builder.CreateBr(condBB);
+    Builder.SetInsertPoint(condBB);
+
+    Value *cond = children[0]->CodeGen();
+    if (!cond)
+    {
+        return LogErrorV("Need condition expression in while loop.");
+    }
+    Builder.CreateCondBr(cond, loopBodyBB, endBB);
+
+    // condBB = Builder.GetInsertBlock();
+    // atFunc->getBasicBlockList().push_back(loopBodyBB);
+
+    // loopBody
+    Builder.SetInsertPoint(loopBodyBB);
+
+    children[1]->CodeGen();
+    Builder.CreateBr(condBB);
+
+    // loopBodyBB = Builder.GetInsertBlock();
+    // atFunc->getBasicBlockList().push_back(endBB);
+
+    Builder.SetInsertPoint(endBB);
+    
+
+    return Constant::getNullValue(TypeGen(TYPEINT));
 }
 
 Value *ReturnStmtAST::CodeGen()

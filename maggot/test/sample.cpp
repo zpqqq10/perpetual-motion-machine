@@ -1,32 +1,34 @@
 // clang -fsyntax-only -Xclang -ast-dump test/sample.cpp
+// rm test/sample.ll
+// clang++ -emit-llvm -S -O0  ./test/sample.cpp -o ./test/sample.ll
 
 int x[10], test = 0x22, f = 0.25, num = 222 - -233;
 bool flag = false;
 
-int minloc(int a[], int low, int high);
-void sort(int a[], int low, int high);
+int minloc(int low, int high);
+void sort(int low, int high);
 
-int minloc(int a[], int low, int high)
+int minloc(int low, int high)
 {
     int i;
-    int x;
+    int y;
     int k;
-    k = a[low];
+    k = x[low];
     i = low + 1;
     while (i < high)
     {
-        if (a[i] < x)
+        if (x[i] < y)
         {
-            x = a[i];
-            k = i;
+            y = x[i];
+            k = i;   
+            i = i + 1;
         }
-        i = i + 1;
     }
     return k;
 }
 
 // sort a list
-void sort(int a[], int low, int high)
+void sort(int low, int high)
 {
     // sort a list
     int i;
@@ -35,10 +37,10 @@ void sort(int a[], int low, int high)
     while (i < high - 1)
     {
         int t;
-        k = minloc(a, i, high);
-        t = a[k];
-        a[k] = a[i];
-        a[i] = t;
+        k = minloc(i, high);
+        t = x[k];
+        x[k] = x[i];
+        x[i] = t;
         i = i + 1;
     }
 }
@@ -57,25 +59,23 @@ int main()
     f = 0.001;
     b = true;
     i = 0;
-    while (i < 10)
+    if (i < 10)
     {
         x[i] = input();
         i = i + 1;
     }
-    sort(x, 0, 10);
+    sort(0, 10);
     i = 0;
     while (i < 10)
     {
-        output(x[i]);
         i = i + 1;
     }
     i = 0;
     while (i < 10)
         i = i + 1;
     {
-        output(233);
         int local = 100;
-        printf("%d %d %d", x[0], x[1], local);
     }
     return 0;
 }
+
