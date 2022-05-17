@@ -2,7 +2,7 @@
 // rm test/sample.ll
 // clang++ -emit-llvm -S -O0  ./test/sample.cpp -o ./test/sample.ll
 
-int x[10], test = 0x22, f = 0.25, num = 222 - -233;
+int x[10], test = 0x22, num = 222 - -233;
 bool flag = false;
 
 int minloc(int low, int high);
@@ -20,7 +20,7 @@ int minloc(int low, int high)
         if (x[i] < y)
         {
             y = x[i];
-            k = i;   
+            k = i;
             i = i + 1;
         }
     }
@@ -65,17 +65,14 @@ int main()
         i = i + 1;
     }
     sort(0, 10);
-    i = 0;
-    while (i < 10)
+    if (i)
     {
-        i = i + 1;
+        while (i > 0)
+            i = i - 1;
     }
-    i = 0;
-    while (i < 10)
-        i = i + 1;
-    {
-        int local = 100;
+    else {
+        while (i < 10)
+            i = i + 1;
     }
     return 0;
 }
-

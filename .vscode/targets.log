@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon May 16 22:52:42 2022
+# Make data base, printed on Tue May 17 14:06:20 2022
 
 # Variables
 
@@ -55,7 +55,7 @@ LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/n7utb
 # environment
-SSH_CONNECTION = 122.225.220.139 30947 10.0.16.4 22
+SSH_CONNECTION = 39.174.145.14 6354 10.0.16.4 22
 # environment
 PATH = /home/n7utb/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/remote-cli:/home/n7utb/.local/bin:/home/n7utb/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # environment
@@ -63,7 +63,7 @@ XDG_RUNTIME_DIR = /run/user/1002
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-6fce28b2-b71a-4654-a27c-4723d5414055.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1002/vscode-ipc-a39bd3a7-9e40-4bce-bbb2-6f42f6fa4f5e.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -105,7 +105,7 @@ MAKECMDGOALS := all
 # environment
 SHLVL = 1
 # environment
-XDG_SESSION_ID = 2729
+XDG_SESSION_ID = 3729
 # environment
 USER = n7utb
 # makefile
@@ -125,7 +125,7 @@ MAKEFLAGS = pqrR
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_CLIENT = 122.225.220.139 30947 22
+SSH_CLIENT = 39.174.145.14 6354 22
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
@@ -225,6 +225,6 @@ GNUmakefile:
 # strcache performance: lookups = 17 / hit rate = 17%
 # hash-table stats:
 # Load=14/8192=0%, Rehash=0, Collisions=1/17=6%
-# Finished Make data base on Mon May 16 22:52:42 2022
+# Finished Make data base on Tue May 17 14:06:20 2022
 
  

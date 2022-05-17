@@ -136,59 +136,66 @@ define dso_local i32 @main() #1 {
   %6 = alloca [10 x i32], align 16
   %7 = alloca float, align 4
   %8 = alloca i8, align 1
-  %9 = alloca i32, align 4
   store i32 0, i32* %1, align 4
   store float 0x3F50624DE0000000, float* %7, align 4
   store i8 1, i8* %8, align 1
   store i32 0, i32* %2, align 4
-  %10 = load i32, i32* %2, align 4
-  %11 = icmp slt i32 %10, 10
-  br i1 %11, label %12, label %19
+  %9 = load i32, i32* %2, align 4
+  %10 = icmp slt i32 %9, 10
+  br i1 %10, label %11, label %18
 
-12:                                               ; preds = %0
-  %13 = call i32 @_Z5inputv()
-  %14 = load i32, i32* %2, align 4
-  %15 = sext i32 %14 to i64
-  %16 = getelementptr inbounds [10 x i32], [10 x i32]* %6, i64 0, i64 %15
-  store i32 %13, i32* %16, align 4
-  %17 = load i32, i32* %2, align 4
-  %18 = add nsw i32 %17, 1
-  store i32 %18, i32* %2, align 4
-  br label %19
+11:                                               ; preds = %0
+  %12 = call i32 @_Z5inputv()
+  %13 = load i32, i32* %2, align 4
+  %14 = sext i32 %13 to i64
+  %15 = getelementptr inbounds [10 x i32], [10 x i32]* %6, i64 0, i64 %14
+  store i32 %12, i32* %15, align 4
+  %16 = load i32, i32* %2, align 4
+  %17 = add nsw i32 %16, 1
+  store i32 %17, i32* %2, align 4
+  br label %18
 
-19:                                               ; preds = %12, %0
+18:                                               ; preds = %11, %0
   call void @_Z4sortii(i32 0, i32 10)
-  store i32 0, i32* %2, align 4
-  br label %20
+  %19 = load i32, i32* %2, align 4
+  %20 = icmp ne i32 %19, 0
+  br i1 %20, label %21, label %29
 
-20:                                               ; preds = %23, %19
-  %21 = load i32, i32* %2, align 4
-  %22 = icmp slt i32 %21, 10
-  br i1 %22, label %23, label %26
+21:                                               ; preds = %18
+  br label %22
 
-23:                                               ; preds = %20
-  %24 = load i32, i32* %2, align 4
-  %25 = add nsw i32 %24, 1
-  store i32 %25, i32* %2, align 4
-  br label %20
+22:                                               ; preds = %25, %21
+  %23 = load i32, i32* %2, align 4
+  %24 = icmp sgt i32 %23, 0
+  br i1 %24, label %25, label %28
 
-26:                                               ; preds = %20
-  store i32 0, i32* %2, align 4
-  br label %27
+25:                                               ; preds = %22
+  %26 = load i32, i32* %2, align 4
+  %27 = sub nsw i32 %26, 1
+  store i32 %27, i32* %2, align 4
+  br label %22
 
-27:                                               ; preds = %30, %26
-  %28 = load i32, i32* %2, align 4
-  %29 = icmp slt i32 %28, 10
-  br i1 %29, label %30, label %33
+28:                                               ; preds = %22
+  br label %37
 
-30:                                               ; preds = %27
+29:                                               ; preds = %18
+  br label %30
+
+30:                                               ; preds = %33, %29
   %31 = load i32, i32* %2, align 4
-  %32 = add nsw i32 %31, 1
-  store i32 %32, i32* %2, align 4
-  br label %27
+  %32 = icmp slt i32 %31, 10
+  br i1 %32, label %33, label %36
 
-33:                                               ; preds = %27
-  store i32 100, i32* %9, align 4
+33:                                               ; preds = %30
+  %34 = load i32, i32* %2, align 4
+  %35 = add nsw i32 %34, 1
+  store i32 %35, i32* %2, align 4
+  br label %30
+
+36:                                               ; preds = %30
+  br label %37
+
+37:                                               ; preds = %36, %28
   ret i32 0
 }
 

@@ -473,6 +473,7 @@ Value *CallExpr::CodeGen()
 
     size_t argssize = CalleeF->arg_size();
     std::vector<Value *> ArgsV;
+    // push arguments' value into vector
     for (unsigned i = 0; i != argssize; ++i)
     {
         ArgsV.push_back(dynamic_cast<ArgsList *>(children[1])->args[i]->CodeGen());
@@ -508,44 +509,39 @@ Value *CompoundStmtAST::CodeGen()
 
 Value *SelectionStmtAST::CodeGen()
 {
+    // calculate condition value
     Value *cond = children[0]->CodeGen();
 
-    if (!cond)
+    if (!cond)  // no condition codes, error
     {
         return LogErrorV("Need condition expression in if statement.");
     }
 
     Function *atFunc = Builder.GetInsertBlock()->getParent();
-
     BasicBlock *thenBB = BasicBlock::Create(TheContext, "THEN", atFunc);
-    BasicBlock *elseBB = BasicBlock::Create(TheContext, "ELSE");
-    BasicBlock *contBB = BasicBlock::Create(TheContext, "IFCONT");
-
-
-
+    BasicBlock *elseBB = BasicBlock::Create(TheContext, "ELSE", atFunc);
+    BasicBlock *contBB = BasicBlock::Create(TheContext, "IFCONT", atFunc);
+    // conditionally branch
     Builder.CreateCondBr(cond, thenBB, elseBB);
+
+    // then statements
     Builder.SetInsertPoint(thenBB);
-
-    // then
     children[1]->CodeGen();
+    // branch to continue part
     Builder.CreateBr(contBB);
+    Builder.SetInsertPoint(contBB);
 
-    thenBB = Builder.GetInsertBlock();
-    atFunc->getBasicBlockList().push_back(elseBB);
-
+    // else generation
     Builder.SetInsertPoint(elseBB);
 
-    // else
+    // else statements
     if (children.size() == 3)
     {
         children[2]->CodeGen();
     }
-
+    // branch to continue part
     Builder.CreateBr(contBB);
-
-    elseBB = Builder.GetInsertBlock();
-    atFunc->getBasicBlockList().push_back(contBB);
-
+    // continue generation
     Builder.SetInsertPoint(contBB);
 
     return nullptr;
@@ -558,31 +554,31 @@ Value *IterationStmtAST::CodeGen()
     BasicBlock *condBB = BasicBlock::Create(TheContext, "COND", atFunc);
     BasicBlock *loopBodyBB = BasicBlock::Create(TheContext, "LOOP", atFunc);
     BasicBlock *endBB = BasicBlock::Create(TheContext, "ENDLOOP", atFunc);
-    // Init
+    // Init generation
     Builder.CreateBr(condBB);
     Builder.SetInsertPoint(condBB);
 
+    // calculate the condition value
     Value *cond = children[0]->CodeGen();
-    if (!cond)
+    if (!cond)  // no condition codes, error
     {
         return LogErrorV("Need condition expression in while loop.");
     }
+    // conditionally branch 
     Builder.CreateCondBr(cond, loopBodyBB, endBB);
 
-    // condBB = Builder.GetInsertBlock();
-    // atFunc->getBasicBlockList().push_back(loopBodyBB);
+    // update basic block
+    condBB = Builder.GetInsertBlock();
 
-    // loopBody
+    // loopBody Generation
     Builder.SetInsertPoint(loopBodyBB);
-
     children[1]->CodeGen();
+    // branch to condition part
     Builder.CreateBr(condBB);
+    loopBodyBB = Builder.GetInsertBlock();
 
-    // loopBodyBB = Builder.GetInsertBlock();
-    // atFunc->getBasicBlockList().push_back(endBB);
-
+    // end part generation
     Builder.SetInsertPoint(endBB);
-    
 
     return Constant::getNullValue(TypeGen(TYPEINT));
 }

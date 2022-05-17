@@ -1,10 +1,10 @@
 ; ModuleID = 'maggot'
-source_filename = "./test/uminus.cpp"
+source_filename = "test/uminus.cpp"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
-define i32 @main(i32 %a, i32 %b) {
-main:
+define i32 @aaa(i32 %a, i32 %b) {
+aaa:
   %d = alloca i32
   %c = alloca i32
   %b2 = alloca i32
@@ -15,7 +15,7 @@ main:
   store i32 0, i32* %d
   br label %COND
 
-COND:                                             ; preds = %ENDLOOP6, %main
+COND:                                             ; preds = %ENDLOOP6, %aaa
   %c3 = load i32, i32* %c
   %cmptmp = icmp sgt i32 %c3, 2
   br i1 %cmptmp, label %LOOP, label %ENDLOOP

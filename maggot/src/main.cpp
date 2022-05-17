@@ -20,6 +20,10 @@ string file_output = "a.out";
 string file_input;
 bool option_show_ast = false;
 bool option_show_ir = false;
+bool option_output_ir = false;
+bool option_output_bc = false;
+bool option_output_as = false;
+bool option_output_bin = false;
 /*
  * extern function declaration
  */
@@ -42,6 +46,10 @@ enum Option
 	OPTION_OUTPUT,
 	OPTION_AST,
 	OPTION_IR,
+	OPTION_IRR,
+	OPTION_AS,
+	OPTION_BC,
+	OPTION_BIN,
 	OPTION_HELP
 };
 
@@ -60,6 +68,10 @@ int main(int argc, char** argv)
 		{"show-ast",	  no_arg,  nullptr, OPTION_AST},
 		{"show-ir", 	  no_arg,  nullptr, OPTION_IR},
 		{"output",		  req_arg, nullptr, OPTION_OUTPUT},
+		{"ir",            no_arg,  nullptr, OPTION_IRR},
+		{"assembly",	  no_arg,  nullptr, OPTION_AS},
+		{"bitcode",       no_arg,  nullptr, OPTION_BC},
+		{"binary",        no_arg,  nullptr, OPTION_BIN},
         {nullptr,         no_arg,  nullptr, 0}
     }; 
 	
@@ -87,6 +99,18 @@ int main(int argc, char** argv)
 				break;
 			case OPTION_IR:
 				option_show_ir = true;
+				break;
+			case OPTION_IRR:
+				option_output_ir = true;
+				break;
+			case OPTION_BC:
+				option_output_bc = true;
+				break;
+			case OPTION_AS:
+				option_output_as = true;
+			case OPTION_BIN:
+				option_output_bin = true;
+				
 		}
 	}
 	if( option_show_ir && file_output != string("a.out") )
