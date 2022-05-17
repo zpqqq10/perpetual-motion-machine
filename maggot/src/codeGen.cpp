@@ -8,16 +8,48 @@ Value *Program::CodeGen()
     TheModule->setTargetTriple("x86_64-pc-linux-gnu");
     TheModule->setDataLayout("e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128");
     TheModule->setSourceFileName(file_input);
+    // InitializeModuleAndPassManager
+
+    // // Create a new pass manager attached to it.
+    // TheFPM = std::make_unique<legacy::FunctionPassManager>(TheModule.get());
+
+    // // Do simple "peephole" optimizations and bit-twiddling optzns.
+    // TheFPM->add(createInstructionCombiningPass());
+    // // Reassociate expressions.
+    // TheFPM->add(createReassociatePass());
+    // // Eliminate Common SubExpressions.
+    // TheFPM->add(createGVNPass());
+    // // Simplify the control flow graph (deleting unreachable blocks, etc).
+    // TheFPM->add(createCFGSimplificationPass());
+
+    // TheFPM->doInitialization();
+
     for (size_t i = 0; i < children.size(); i++)
     {
         children[i]->CodeGen();
     }
     if (option_show_ir)
         TheModule->print(errs(), nullptr);
-    else
+    if (option_output_ir || option_output_bc || option_output_as || option_output_bin)
     {
-        raw_fd_ostream file(file_output, errorcode);
+        raw_fd_ostream file(option_output_ir ? file_output : "__temp.ll", errorcode);
         TheModule->print(file, nullptr);
+    }
+    if (option_output_bc || option_output_as || option_output_bin)
+    {
+
+        std::system((std::string("llvm-as __temp.ll -o ") + (option_output_bc ? file_output : std::string("__temp.bc"))).c_str());
+        std::system("rm __temp.ll");
+    }
+    if (option_output_as || option_output_bin)
+    {
+        std::system((std::string("llc --march=x86-64 __temp.bc -o ") + (option_output_bc ? file_output : std::string("__temp.s"))).c_str());
+        std::system("rm __temp.bc");
+    }
+    if (option_output_bin)
+    {
+        std::system((std::string("clang++ __temp.s ./lib/libstd.o -o ") + file_output).c_str());
+        std::system("rm __temp.s");
     }
     return nullptr;
 }
@@ -512,7 +544,7 @@ Value *SelectionStmtAST::CodeGen()
     // calculate condition value
     Value *cond = children[0]->CodeGen();
 
-    if (!cond)  // no condition codes, error
+    if (!cond) // no condition codes, error
     {
         return LogErrorV("Need condition expression in if statement.");
     }
@@ -560,11 +592,11 @@ Value *IterationStmtAST::CodeGen()
 
     // calculate the condition value
     Value *cond = children[0]->CodeGen();
-    if (!cond)  // no condition codes, error
+    if (!cond) // no condition codes, error
     {
         return LogErrorV("Need condition expression in while loop.");
     }
-    // conditionally branch 
+    // conditionally branch
     Builder.CreateCondBr(cond, loopBodyBB, endBB);
 
     // update basic block

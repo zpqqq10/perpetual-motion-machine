@@ -61,6 +61,7 @@ bool { return BOOL;}
 void {return VOID;}
 string {return STRING;}
 
+extern {return EXTERN;}
 break {return BREAK;}
 return {return RETURN;}
 while {return WHILE;}

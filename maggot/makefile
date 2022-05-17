@@ -12,8 +12,8 @@ OBJS=\
 	src/utils.o \
 	src/y.tab.o \
 	src/lex.yy.o \
-	src/codeGen.o
-	
+	src/codeGen.o \
+	lib/libstd.o
 
 maggot: $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LLVMFLAGS) $(OBJS) -o $@ 

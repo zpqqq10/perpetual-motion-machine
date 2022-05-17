@@ -108,14 +108,20 @@ int main(int argc, char** argv)
 				break;
 			case OPTION_AS:
 				option_output_as = true;
+				break;
 			case OPTION_BIN:
 				option_output_bin = true;
+				break;
 				
 		}
 	}
-	if( option_show_ir && file_output != string("a.out") )
+	if( !option_output_ir && !option_output_as && !option_output_bc && !option_output_bin)
 	{
-		error("Cannot display and output at the same time!");
+		option_output_ir = true;
+	}
+	if ((option_output_ir + option_output_bc + option_output_as + option_output_bin) != 1)
+	{
+		error("ambiguous output type, remote redundant option; try `--help' for more information");
 		return EXIT_FAILURE;
 	}
 	if (optind != argc-1)
@@ -158,6 +164,22 @@ static void usage(FILE *stream, const char *progname)
 		"\t--output, -o <file>\n"
 		"\t\tPlace the output into <file>.\n"
 		"\t\tDefalut: a.out\n"
+		"\n"
+		"\t--ir[=true]\n"
+		"\t\tOutput the IR Code to file\n"
+		"\t\tDefault: true (enabled)\n"
+		"\n"
+		"\t--bitcode[=false]\n"
+		"\t\tOutput the Bitcode to file\n"
+		"\t\tDefault: false (disabled)\n"
+		"\n"
+		"\t--assembly[=false]\n"
+		"\t\tOutput the Assembly to file\n"
+		"\t\tDefault: false (disabled)\n"
+		"\n"
+		"\t--binary[=false]\n"
+		"\t\tOutput the Binary to file\n"
+		"\t\tDefault: false (disabled)\n"
         "\n",
 		progname);
 }

@@ -32,6 +32,11 @@ extern bool option_debug;
 extern std::string file_output;
 extern bool option_show_ir;
 extern std::string file_input;
+extern bool option_output_ir;
+extern bool option_output_bc;
+extern bool option_output_as;
+extern bool option_output_bin;
+
 
 extern void warning(const char *msg, ...);
 extern void NO_RETURN error(const char *msg, ...);

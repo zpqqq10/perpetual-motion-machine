@@ -28,7 +28,7 @@ int yyerror(const char *s);
 }
 
 %token COLON SEMICOLON COMMA LEFTP RIGHTP LEFTB RIGHTB LEFTSB RIGHTSB DQUOTE SQUOTE
-%token RETURN FOR IN TO WHILE IF ELSE BREAK
+%token RETURN FOR IN TO WHILE IF ELSE BREAK EXTERN
 %token <str> IDENTIFIER STRING_VALUE COMMENT
 %token <valuetext> INT FLOAT BOOL VOID STRING
 %token <valuetext> INTEGER_VALUE FLOAT_VALUE FALSE TRUE
@@ -87,6 +87,7 @@ func_decl: type_specifier IDENTIFIER LEFTP params RIGHTP compound_stmt {BaseAST*
 
 // prototype declaration
 proto_decl: type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {BaseAST* f = new ProtoAST($1, *$2);f->children.push_back($4);$$ = f;} 
+		  /* | EXTERN type_specifier IDENTIFIER LEFTP params RIGHTP SEMICOLON {BaseAST* f = new ProtoAST($1, *$2);f->children.push_back($4);$$ = f;}  */
 		  ;
 
 
