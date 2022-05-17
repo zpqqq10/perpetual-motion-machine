@@ -1,0 +1,5 @@
+.vscode
+y.tab.cpp
+y.tab.hpp
+lex.yy.cpp
+*.o
