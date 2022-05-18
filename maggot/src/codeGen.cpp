@@ -118,7 +118,7 @@ Value *getInitialValue(int type)
     case TYPEINTARRAY:
         return ConstantAggregateZero::get(TypeGen(TYPEINT));
     case TYPEFLOAT:
-        return ConstantFP::get(TheContext, APFloat(0.0));
+        return ConstantFP::get(TheContext, APFloat((float)0.0));
     case TYPEFLOATARRAY:
         return ConstantAggregateZero::get(TypeGen(TYPEFLOAT));
     case TYPEBOOL:
@@ -173,7 +173,7 @@ Value *VarDeclList::CodeGen()
         {
             VarDeclAST *var = vars[i];
             Value *InitVal;
-
+            debug("%s, %d", var->name.c_str(), var->type);
             if (var->children.size())
             {
                 InitVal = var->children[0]->CodeGen();
@@ -183,7 +183,8 @@ Value *VarDeclList::CodeGen()
                 InitVal = getInitialValue(var->type);
             }
             AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, var->name, var->length == -1 ? TypeGen(var->type) : TypeGen(var->type, var->length));
-            Builder.CreateStore(InitVal, Alloca);
+            if (var->length == -1)
+                Builder.CreateStore(InitVal, Alloca);
             current->OldBindings.push_back(make_pair(var->name, NamedValues[var->name]));
             NamedValues[var->name] = Alloca;
         }
@@ -255,7 +256,7 @@ Function *FuncAST::CodeGen()
     children[1]->CodeGen();
 
     // Finish off the function.
-    Builder.CreateRet(getInitialValue(rettype));
+    // Builder.CreateRet(getInitialValue(rettype));
     // Validate the generated code, checking for consistency.
     verifyFunction(*TheFunction);
 
