@@ -32,11 +32,15 @@
 #define TYPEBOOL 4
 #define TYPEINTARRAY 5
 #define TYPEFLOATARRAY 6
-#define TYPECHARPTR 7
+#define TYPECHARARRAY 7
 #define TYPESTRING 8
 #define TYPEINVALID 16
+#define TYPEINTPTR 9
+#define TYPEFLOATPTR 10
+#define TYPECHARPTR 11
 
 #define TYPEARRAY 4
+#define TYPEPTR 8
 // operands
 #define OPADD 0 // arithmetic
 #define OPSUB 1

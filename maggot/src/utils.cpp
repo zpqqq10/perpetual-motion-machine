@@ -15,13 +15,18 @@ std::string get_type_name(int type)
 	case TYPEBOOL:
 		return "bool";
 	case TYPEINTARRAY:
+	case TYPEINTPTR:
 		return "int *";
 	case TYPEFLOATARRAY:
+	case TYPEFLOATPTR:
 		return "float *";
+	case TYPECHARARRAY:
 	case TYPECHARPTR:
 		return "char *";
 	case TYPESTRING:
 		return "string";
+
+
 	default:
 		// error
 		return "invalid";

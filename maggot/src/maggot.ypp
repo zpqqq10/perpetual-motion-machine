@@ -30,8 +30,8 @@ int yyerror(const char *s);
 %token COLON SEMICOLON COMMA LEFTP RIGHTP LEFTB RIGHTB LEFTSB RIGHTSB DQUOTE SQUOTE
 %token RETURN FOR IN TO WHILE IF ELSE BREAK EXTERN
 %token <str> IDENTIFIER STRING_VALUE COMMENT
-%token <valuetext> INT FLOAT BOOL VOID STRING
-%token <valuetext> INTEGER_VALUE FLOAT_VALUE FALSE TRUE
+%token INT FLOAT BOOL VOID STRING CHAR CHARPTR
+%token <valuetext> INTEGER_VALUE FLOAT_VALUE FALSE TRUE CHAR_VALUE
 %token ASSIGN GT LT EQ NEQ GE LE AND OR XOR
 
 %left  <Op> GT LT EQ NEQ GE LE
@@ -72,13 +72,15 @@ vars: vars COMMA var {$$ = $1;dynamic_cast<VarDeclList *>$$->addvar(dynamic_cast
 var: IDENTIFIER {$$ = new VarDeclAST(*$1);}
    | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB {$$ = new VarDeclAST(*$1, stoi(*$3));}
    | IDENTIFIER ASSIGN expression {$$ = new VarDeclAST(*$1); $$->children.push_back($3);}
+   | IDENTIFIER LEFTSB INTEGER_VALUE RIGHTSB ASSIGN value {$$ = new VarDeclAST(*$1, stoi(*$3)); $$->children.push_back($6);}
    ;
 
 type_specifier: INT {$$ = TYPEINT;}
 			  | FLOAT {$$ = TYPEFLOAT;}
 			  | BOOL {$$ = TYPEBOOL;}
 			  | VOID {$$ = TYPEVOID;}
-			  | STRING {$$ = TYPESTRING;}
+			  | CHAR {$$ = TYPECHAR;}
+			  /* | STRING {$$ = TYPESTRING;} */
 			  ;
 
 // function definition
@@ -102,7 +104,7 @@ param_list: param_list COMMA param {$$ = $1;dynamic_cast<ParmVarDeclList *>$$->a
 		  ;
 
 param: type_specifier IDENTIFIER {$$ = new ParmVarDeclAST(*$2); dynamic_cast<ParmVarDeclAST *>$$->settype($1);} 
-	 /* | type_specifier IDENTIFIER LEFTSB RIGHTSB {$$ = new ParmVarDeclAST(*$2); dynamic_cast<ParmVarDeclAST *>$$->settype($1 + TYPEARRAY);}  */
+	  | type_specifier IDENTIFIER LEFTSB RIGHTSB {$$ = new ParmVarDeclAST(*$2); dynamic_cast<ParmVarDeclAST *>$$->settype($1 + TYPEPTR);} 
 	 ;
 
 // begin with { and end with }
@@ -195,6 +197,7 @@ value: INTEGER_VALUE {$$ = new IntegerAST(stoi(*$1));}
 	 | STRING_VALUE {$$ = new StringAST(*$1);}	
 	 | TRUE {$$ = new BoolAST(true);}
 	 | FALSE {$$ = new BoolAST(false);}
+	 | CHAR_VALUE {$$ = new CharAST(*$1);}
 	 ;
 
 // function call

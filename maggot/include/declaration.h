@@ -40,7 +40,7 @@ public:
     virtual void print(int level)
     {
         padding(level);
-        cout << _GREEN << "VarDecl " << _CYAN << name << _RED << (isGlobal ? " global " : " local ") << White << " " << get_type_name(type);
+        cout << _GREEN << "VarDecl " << _CYAN << name << _RED << (isGlobal ? " global" : " local") << White << " " << get_type_name(type);
 
         cout << endl;
         for (size_t i = 0; i < children.size(); i++)

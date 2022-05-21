@@ -1,0 +1,32 @@
+; ModuleID = 'maggot'
+source_filename = "./test/array.cpp"
+target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-pc-linux-gnu"
+
+@k = global [10 x i32] zeroinitializer
+
+declare i32 @print_f(float)
+
+declare i32 @print_d(i32)
+
+declare i32 @print_c(i8)
+
+define i32 @main() {
+main:
+  %a = alloca i1
+  %j = alloca i32
+  %i = alloca i8
+  store i8 97, i8* %i
+  store i32 2, i32* %j
+  store i1 true, i1* %a
+  %j1 = load i32, i32* %j
+  %a2 = load i1, i1* %a
+  %0 = sext i1 %a2 to i32
+  %addtmp = add nsw i32 %j1, i1 %a2
+  store i32 %addtmp, i32* %j
+  %i3 = load i8, i8* %i
+  %calltmp = call i32 @print_c(i8 %i3)
+  %j4 = load i32, i32* %j
+  %calltmp5 = call i32 @print_d(i32 %j4)
+  ret i32 0
+}

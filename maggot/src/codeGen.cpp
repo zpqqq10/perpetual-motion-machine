@@ -93,6 +93,14 @@ Type *TypeGen(int type)
         return Type::getVoidTy(TheContext);
     case TYPECHAR:
         return Type::getInt8Ty(TheContext);
+    case TYPECHARARRAY:
+        return Type::getInt8Ty(TheContext);
+    case TYPEINTPTR:
+        return Type::getInt32PtrTy(TheContext);
+    case TYPECHARPTR:
+        return Type::getInt8PtrTy(TheContext);
+    case TYPEFLOATPTR:
+        return Type::getFloatPtrTy(TheContext);
     default:
         return Type::getInt32Ty(TheContext);
     }
@@ -106,11 +114,27 @@ ArrayType *TypeGen(int type, int size)
         return ArrayType::get(TypeGen(type), size);
     case TYPEFLOATARRAY:
         return ArrayType::get(TypeGen(type), size);
+    case TYPECHARARRAY:
+        return ArrayType::get(TypeGen(type), size);
     default:
         return ArrayType::get(TypeGen(TYPEINT), size);
     }
 }
 
+Type* IntGen(int bitwidth)
+{
+    switch (bitwidth)
+    {
+        case 1:
+            return Type::getInt1Ty(TheContext);
+        case 8:
+            return Type::getInt8Ty(TheContext);
+        case 32:
+            return Type::getInt32Ty(TheContext);
+        default:
+            return Type::getInt32Ty(TheContext);
+    }
+}
 Value *getInitialValue(int type)
 {
     switch (type)
@@ -121,15 +145,23 @@ Value *getInitialValue(int type)
         return ConstantFP::get(TheContext, APFloat((float)0.0));
     case TYPEFLOATARRAY:
         return ConstantAggregateZero::get(TypeGen(TYPEFLOAT));
+    case TYPECHARARRAY:
+        return ConstantAggregateZero::get(TypeGen(TYPECHAR));
     case TYPEBOOL:
         return ConstantInt::get(TheContext, APInt(1, 0, false));
     case TYPEVOID:
         return nullptr;
     case TYPECHAR:
         return ConstantInt::get(TheContext, APInt(8, 0, true));
+    case TYPEINTPTR:
+        return ConstantInt::get(TypeGen(type), APInt(32, 0, true));
+    case TYPEFLOATPTR:
+        return ConstantFP::get(TypeGen(type), APFloat((float)0.0));
+    case TYPECHARPTR:
+        return ConstantInt::get(TypeGen(type), APInt(8, 0, true));
     case TYPEINT:
     default:
-        return ConstantInt::get(TheContext, APInt(32, 0, true));
+        return ConstantInt::get(TheContext, APInt(32, 0, false));
     }
 }
 
@@ -166,14 +198,12 @@ Value *VarDeclList::CodeGen()
     }
     else
     {
-
         CompoundStmtAST *current = compoundstack.back();
         Function *TheFunction = Builder.GetInsertBlock()->getParent();
         for (int i = 0; i < vars.size(); i++)
         {
             VarDeclAST *var = vars[i];
             Value *InitVal;
-            debug("%s, %d", var->name.c_str(), var->type);
             if (var->children.size())
             {
                 InitVal = var->children[0]->CodeGen();
@@ -300,7 +330,7 @@ Value *VoidAST::CodeGen()
 
 Value *IntegerAST::CodeGen()
 {
-    return ConstantInt::get(TheContext, APInt(32, value, true));
+    return ConstantInt::get(TheContext, APInt(32, value, false));
 }
 
 Value *FloatAST::CodeGen()
@@ -317,6 +347,11 @@ Value *BoolAST::CodeGen()
 Value *StringAST::CodeGen()
 {
     return nullptr;
+}
+
+Value *CharAST::CodeGen()
+{
+    return ConstantInt::get(TheContext, APInt(8, value, false));
 }
 
 Value *BinaryOpAST::CodeGen()
@@ -341,7 +376,7 @@ Value *BinaryOpAST::CodeGen()
     Value *R = children[1]->CodeGen();
     if (!L || !R)
         return LogErrorV("Expression Error!");
-
+ 
     if (((L->getType()->isFloatTy() || L->getType()->isIntegerTy()) && (R->getType()->isFloatTy() || R->getType()->isIntegerTy())) || (type == OPASSIGN && L->getType()->isPointerTy()))
     {
         // can be compared of computed;
@@ -364,6 +399,17 @@ Value *BinaryOpAST::CodeGen()
                 R = Builder.CreateSIToFP(R, TypeGen(TYPEFLOAT));
                 // else
                 //     R = Builder.CreateUIToFP(R, TypeGen(TYPEFLOAT));
+            }
+        }
+        if((L->getType()->isIntegerTy() && R->getType()->isIntegerTy()))
+        {
+            if(L->getType()->getIntegerBitWidth() >  R->getType()->getIntegerBitWidth())
+            {
+                R = R->getType()->getIntegerBitWidth() == 1 ? Builder.CreateZExtOrBitCast(R, IntGen(L->getType()->getIntegerBitWidth())) :  Builder.CreateSExtOrBitCast(R, IntGen(L->getType()->getIntegerBitWidth()));
+            }
+            else if (L->getType()->getIntegerBitWidth() < R->getType()->getIntegerBitWidth())
+            {
+                    L = L->getType()->getIntegerBitWidth() == 1 ? Builder.CreateZExtOrBitCast(L, IntGen(R->getType()->getIntegerBitWidth())) :Builder.CreateSExtOrBitCast(L,IntGen(R->getType()->getIntegerBitWidth()));
             }
         }
         switch (type)
@@ -418,6 +464,12 @@ Value *BinaryOpAST::CodeGen()
             {
                 R = Builder.CreateFPToSI(R, TypeGen(TYPEINT));
             }
+            if( L->getType()->getPointerElementType()->isIntegerTy() && R->getType()->isIntegerTy() &&L->getType()->getPointerElementType()->getIntegerBitWidth() != R->getType()->getIntegerBitWidth())
+            {
+                R = R->getType()->getIntegerBitWidth() == 1 
+                    ? Builder.CreateZExtOrTrunc(R, IntGen(L->getType()->getPointerElementType()->getIntegerBitWidth())) 
+                    : Builder.CreateSExtOrTrunc(R, IntGen(L->getType()->getPointerElementType()->getIntegerBitWidth()));
+            }
             return Builder.CreateStore(R, L);
         default:
             return LogErrorV("invalid binary operator");
@@ -460,10 +512,10 @@ Value *RefAST::CodeGen()
         }
     }
     Value *addr = V;
-
-    if (V->getType()->getPointerElementType()->isArrayTy() || isStore)
+    if (V->getType()->getPointerElementType()->isArrayTy() || isStore || V->getType()->getPointerElementType()->isPointerTy())
     {
         addr = V;
+
     }
     else
     {
@@ -482,13 +534,25 @@ Value *ArraySubscriptExpr::CodeGen()
     {
         return LogErrorV("Index must be integer!");
     }
-    indices.push_back(getInitialValue(TYPEINT));
-    indices.push_back(index);
+    if( arrVal->getType()->getPointerElementType()->isPointerTy())
+    {
+        arrVal = Builder.CreateLoad(arrVal->getType()->getPointerElementType(), arrVal);
+        indices.push_back(index);
+    }
+    else
+    {
+        indices.push_back(ConstantInt::get(Type::getInt64Ty(TheContext),0));
+        indices.push_back(index);
+    }
+
+
     Value *elePtr = Builder.CreateInBoundsGEP(arrVal, indices);
+
     if (isStore)
         return elePtr;
     else
-        return Builder.CreateLoad(arrVal->getType()->getPointerElementType()->getArrayElementType(), elePtr);
+        // return Builder.CreateLoad(arrVal->getType()->getPointerElementType()->getArrayElementType(), elePtr);
+        return Builder.CreateLoad(elePtr->getType()->getPointerElementType(), elePtr);
 }
 
 Value *CallExpr::CodeGen()
@@ -509,7 +573,15 @@ Value *CallExpr::CodeGen()
     // push arguments' value into vector
     for (unsigned i = 0; i != argssize; ++i)
     {
-        ArgsV.push_back(dynamic_cast<ArgsList *>(children[1])->args[i]->CodeGen());
+        Value* param = dynamic_cast<ArgsList *>(children[1])->args[i]->CodeGen();
+        if(param->getType()->isPointerTy() && param->getType()->getPointerElementType()->isArrayTy())
+        {
+            std::vector<Value *> indices;
+            indices.push_back(ConstantInt::get(Type::getInt64Ty(TheContext),0));
+            indices.push_back(ConstantInt::get(Type::getInt64Ty(TheContext),0));
+            param = Builder.CreateInBoundsGEP(param, indices);
+        }
+        ArgsV.push_back(param);
         if (!ArgsV.back())
             return nullptr;
     }

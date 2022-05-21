@@ -23,6 +23,7 @@ HEX     (0[xX])([0-9a-fA-F]+)
 INT     ({OCT}|{HEX}|{DEC})
 REAL    (((({Digits}?\.{Digits})|({Digits}\.))([eE]{Sign}{Digits})?)|({Digits}[eE]{Sign}{Digits}))
 STRING  \"({Schar}+)?\"
+CHARACTER \'[ -~]\'
 LINECOMMENT     "//"[^\r\n]*
 BLOCKCOMMENT    "/*""/"*([^*/]|[^*]"/"|"*"[^/])*"*"*"*/"
 COMMENTS        ({LINECOMMENT})|({BLOCKCOMMENT})
@@ -60,7 +61,8 @@ int {return INT;}
 bool { return BOOL;}
 void {return VOID;}
 string {return STRING;}
-
+char {return CHAR;}
+char\* {return CHARPTR;}
 extern {return EXTERN;}
 break {return BREAK;}
 return {return RETURN;}
@@ -80,6 +82,8 @@ true {return TRUE;}
 {INT} {yylval.valuetext = new string(yytext); return INTEGER_VALUE;}
 
 {REAL} {yylval.valuetext = new string(yytext); return FLOAT_VALUE;}
+
+{CHARACTER} {yylval.valuetext = new string(yytext); return CHAR_VALUE;}
 
 {COMMENTS} {return COMMENT;}
 

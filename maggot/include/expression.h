@@ -117,6 +117,32 @@ public:
     virtual llvm::Value *CodeGen();
 };
 
+class CharAST : public BaseAST
+{
+    char value;
+
+public:
+    CharAST(string v)
+    {
+        value = v[1];
+    }
+
+    char getValue()
+    {
+        return this->value;
+    }
+
+    virtual void print(int level)
+    {
+        padding(level);
+        cout << _PURPLE << "CharLiteral "
+             << " " << _CYAN << value << White << endl;
+        return;
+    }
+
+    virtual llvm::Value *CodeGen();
+};
+
 // for binary operator
 class BinaryOpAST : public BaseAST
 {

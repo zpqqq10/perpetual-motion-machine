@@ -16,4 +16,14 @@ extern "C"
     fprintf(stdout, "the float is %f\n", f);
     return 0;
   }
+  extern int print_c(char c)
+  {
+    fprintf(stdout, "the char is %c\n", c);
+    return 0;
+  }
+  extern int print(char* s)
+  {
+    fprintf(stdout, "%s\n", s);
+    return 0;
+  }
 }
