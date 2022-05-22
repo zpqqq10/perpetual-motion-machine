@@ -93,9 +93,10 @@ public:
 
 class StringAST : public BaseAST
 {
-    string value;
+    
 
 public:
+    string value;
     StringAST(string v)
     {
         value = v.substr(1, v.length() - 2);

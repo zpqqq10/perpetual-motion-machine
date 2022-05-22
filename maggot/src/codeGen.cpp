@@ -27,6 +27,7 @@ Value *Program::CodeGen()
     for (size_t i = 0; i < children.size(); i++)
     {
         children[i]->CodeGen();
+        debug("%d",i);
     }
     if (option_show_ir)
         TheModule->print(errs(), nullptr);
@@ -180,20 +181,41 @@ Value *VarDeclList::CodeGen()
         {
             VarDeclAST *var = vars[i];
             Value *InitVal;
-            // InitVal = ConstantFP::get(TheContext, APFloat(0.0));
+            
             if (var->children.size())
             {
-                InitVal = var->children[0]->CodeGen();
+                if(var->length == -1)
+                    InitVal = var->children[0]->CodeGen();
+                else
+                {
+                    std::vector<llvm::Constant*> init;
+                    int Idx = 0;
+                    for(auto it:dynamic_cast<StringAST*>(var->children[0])->value)
+                    {
+                        init.push_back(Constant::getIntegerValue(TypeGen(TYPECHAR),APInt(8,it)));
+                        Idx++;
+                    }
+                    for(;Idx < var->length;Idx++)
+                    {
+                        init.push_back(Constant::getIntegerValue(TypeGen(TYPECHAR),APInt(8,0)));
+                    }
+                    InitVal = ConstantArray::get(TypeGen(var->type, var->length),init);
+                    // InitVal = dynamic_cast<StringAST*>(var->children[0])->value;
+                }
             }
             else
             {
                 InitVal = getInitialValue(var->type);
             }
             // maintain global variable
+            
             TheModule->getOrInsertGlobal(var->name, var->length == -1 ? TypeGen(var->type) : TypeGen(var->type, var->length));
             GlobalVariable *gVar = TheModule->getNamedGlobal(var->name);
             // gVar->setAlignment(MaybeAlign(4));
+            
             gVar->setInitializer(static_cast<Constant *>(InitVal));
+            
+
         }
     }
     else
@@ -204,21 +226,38 @@ Value *VarDeclList::CodeGen()
         {
             VarDeclAST *var = vars[i];
             Value *InitVal;
-            if (var->children.size())
+            AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, var->name, var->length == -1 ? TypeGen(var->type) : TypeGen(var->type, var->length));
+
+            if (var->length == -1)
             {
-                InitVal = var->children[0]->CodeGen();
+                if (var->children.size())
+                {
+                    InitVal = var->children[0]->CodeGen();
+                }
+                else
+                {
+                    InitVal = getInitialValue(var->type);
+                }
+                Builder.CreateStore(InitVal, Alloca);
             }
             else
             {
-                InitVal = getInitialValue(var->type);
+                if (var->children.size())
+                {
+                    InitVal = var->children[0]->CodeGen();
+                    std::vector<Value *> indices;
+                    indices.push_back(ConstantInt::get(Type::getInt64Ty(TheContext),0));
+                    indices.push_back(ConstantInt::get(Type::getInt64Ty(TheContext),0));
+                    InitVal = Builder.CreateInBoundsGEP(InitVal, indices);
+                    Builder.CreateMemCpy(Alloca,MaybeAlign(1),InitVal,MaybeAlign(1),var->length);
+                }
+
             }
-            AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, var->name, var->length == -1 ? TypeGen(var->type) : TypeGen(var->type, var->length));
-            if (var->length == -1)
-                Builder.CreateStore(InitVal, Alloca);
             current->OldBindings.push_back(make_pair(var->name, NamedValues[var->name]));
             NamedValues[var->name] = Alloca;
         }
     }
+    
     return nullptr;
 }
 
@@ -234,9 +273,9 @@ Value *ParmVarDeclList::CodeGen()
 
 Function *FuncAST::CodeGen()
 {
+    debug("22222");
     // First, check for an existing function from a previous 'extern' declaration.
     Function *TheFunction = TheModule->getFunction(funcname);
-
     if (!TheFunction)
     {
         ParmVarDeclList *argslist = dynamic_cast<ParmVarDeclList *>(children[0]);
@@ -346,7 +385,11 @@ Value *BoolAST::CodeGen()
 
 Value *StringAST::CodeGen()
 {
-    return nullptr;
+    // debug("%s",value.c_str());
+    return Builder.CreateGlobalString(value);
+    // Builder.CreateGlobalString()
+    // return nullptr;
+
 }
 
 Value *CharAST::CodeGen()
